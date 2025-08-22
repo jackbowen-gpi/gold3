@@ -19,7 +19,7 @@ ADMINS = (("Admin", "jack.bowen@graphicpkg.com"),)
 
 AUTH_USER_MODEL = "users.User"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [*]
 
 DATABASES = {
     "default": config("DATABASE_URL", cast=db_url),
