@@ -29,7 +29,7 @@ docker_test_reset:
 	docker compose run backend python manage.py test $(ARG) --parallel
 
 docker_up:
-	docker compose up -d
+	docker compose up -d --remove-orphans
 
 docker_update_dependencies:
 	docker compose down
