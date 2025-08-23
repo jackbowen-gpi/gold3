@@ -13,7 +13,9 @@ echo "-----> Build frontend done"
 echo "-----> Poetry install"
 poetry install --without dev --no-root --no-interaction
 echo "-----> Poetry done"
-
+echo "-----> Post-compile hook"
+chmod +x backend/manage.py
+echo "-----> Post-compile hook done"
 echo "-----> Running manage.py check --deploy --fail-level WARNING"
 poetry run backend/manage.py check --deploy --fail-level WARNING
 
