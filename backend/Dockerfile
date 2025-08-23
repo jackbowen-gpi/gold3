@@ -26,7 +26,8 @@ RUN poetry install --with dev --no-root --no-interaction --no-ansi
 WORKDIR /home/user/app/backend
 COPY backend/ /home/user/app/backend
 
-RUN chmod +x backend/manage.py
+RUN chmod +x manage.py
 
 USER user
+# Set the working directory
 CMD gunicorn gold3.wsgi --log-file - -b 0.0.0.0:8080 --reload
