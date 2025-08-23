@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-export DJANGO_SETTINGS_MODULE=gold3.settings.local
+export DJANGO_SETTINGS_MODULE=gold3.settings.local_base
 
 echo "-----> Build hook"
 

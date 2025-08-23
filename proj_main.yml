@@ -64,7 +64,7 @@ jobs:
       - name: Linting
         run: poetry run ruff check ./backend/
         env:
-          DJANGO_SETTINGS_MODULE: "gold3.settings.local"
+          DJANGO_SETTINGS_MODULE: "gold3.settings.local_base"
           SECRET_KEY: ${{ steps.secret_id_generator.outputs.SECRET_KEY }}
           DATABASE_URL: "sqlite:///"
           ALLOWED_HOSTS: ".example.org"
