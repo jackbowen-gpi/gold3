@@ -33,7 +33,7 @@ services:
       - fromGroup: python-services
       - fromGroup: integrations-credentials
       - key: SENTRY_ENVIRONMENT
-        value: "local_base"
+        value: "production"
       - key: SENTRY_RELEASE
         value: "0.1.0"  
       - key: SENTRY_API_KEY
