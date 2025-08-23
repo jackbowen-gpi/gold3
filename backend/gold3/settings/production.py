@@ -137,6 +137,7 @@ JS_REVERSE_EXCLUDE_NAMESPACES = ["admin"]
 sentry_sdk.init(
     dsn="https://80ce746db92736a343f0ca2c6434eb5b@o4509890398781440.ingest.us.sentry.io/4509891264512000",
     traces_sample_rate=1.0,
+    send_default_pii=True,
 )
 
 SENTRY_LOG_LEVEL = config("SENTRY_LOG_LEVEL", default="debug").upper()
