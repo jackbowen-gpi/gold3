@@ -37,7 +37,7 @@ services:
       - key: SENTRY_RELEASE
         value: "0.1.0"  
       - key: SENTRY_API_KEY
-        value: "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"
+        value: "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"
       - key: SENTRY_ORG
         value: "jack-bowen"
       - key: SENTRY_PROJECT_NAME
