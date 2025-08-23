@@ -2,7 +2,9 @@ from .base import *
 
 
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]  
+# Allow all hosts during testing to avoid host header issues
+SECRET_KEY = ["test-secret-key"]
 
 
 STATIC_ROOT = base_dir_join("staticfiles")
