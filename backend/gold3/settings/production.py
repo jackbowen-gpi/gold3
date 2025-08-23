@@ -136,18 +136,7 @@ JS_REVERSE_EXCLUDE_NAMESPACES = ["admin"]
 # Sentry
 sentry_sdk.init(
     dsn="https://80ce746db92736a343f0ca2c6434eb5b@o4509890398781440.ingest.us.sentry.io/4509891264512000",
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for tracing.
     traces_sample_rate=1.0,
-    # Set profile_session_sample_rate to 1.0 to profile 100%
-    # of profile sessions.
-    profile_session_sample_rate=1.0,
-    # Set profile_lifecycle to "trace" to automatically
-    # run the profiler on when there is an active transaction
-    profile_lifecycle="trace",
 )
 
-SENTRY_LOG_LEVEL = config("SENTRY_LOG_LEVEL", default="info")
+SENTRY_LOG_LEVEL = config("SENTRY_LOG_LEVEL", default="debug").upper()
