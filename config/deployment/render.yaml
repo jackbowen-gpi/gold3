@@ -118,7 +118,7 @@ envVarGroups:
   - name: python-services
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.0
+        value: 3.13
       - key: POETRY_VERSION
         value: 2.0.1
       - key: SECRET_KEY

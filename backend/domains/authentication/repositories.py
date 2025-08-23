@@ -1,4 +1,3 @@
-from typing import Any
 
 from domains.shared.repositories.base import BaseRepository
 from users.models import User

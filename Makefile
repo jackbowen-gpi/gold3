@@ -57,7 +57,10 @@ superuser: ## Create Django superuser
 	poetry run python backend/manage.py createsuperuser
 
 # Code Quality
-.PHONY: lint
+.PHONY: lintsudo apt update
+sudo apt install python3 python3-venv python3-pipsudo apt update
+sudo apt install python3 python3-venv python3-pipsudo apt update
+sudo apt install python3 python3-venv python3-pip
 lint: ## Run all linters
 	@echo "🔍 Running backend linting..."
 	poetry run ruff check backend/
