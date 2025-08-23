@@ -56,20 +56,23 @@ db-reset: ## Reset database (WARNING: destroys all data)
 superuser: ## Create Django superuser
 	poetry run python backend/manage.py createsuperuser
 
-# Code Quality
-.PHONY: lint
+# # Code Quality
+# .PHONY: lintsudo apt update
+# sudo apt install python3 python3-venv python3-pipsudo apt update
+# sudo apt install python3 python3-venv python3-pipsudo apt update
+# sudo apt install python3 python3-venv python3-pip
 lint: ## Run all linters
 	@echo "🔍 Running backend linting..."
 	poetry run ruff check backend/
 	@echo "🔍 Running frontend linting..."
-	npm run lint
+	npx eslint
 
 .PHONY: lint-fix
 lint-fix: ## Fix linting issues automatically
 	@echo "🔧 Fixing backend linting issues..."
 	poetry run ruff check --fix backend/
 	@echo "🔧 Fixing frontend linting issues..."
-	npm run lint
+	npx eslint --fix
 
 .PHONY: format
 format: ## Format code
@@ -134,7 +137,7 @@ docker-build: ## Build Docker images
 
 .PHONY: docker-up
 docker-up: ## Start all services with Docker
-	docker-compose -f docker-compose.dev.yml up
+	docker-compose -f docker-compose.dev.yml up 
 
 .PHONY: docker-down
 docker-down: ## Stop all Docker services

@@ -4,7 +4,7 @@
   "private": true,
   "description": "gold3 frontend.",
   "engines": {
-    "node": ">=20 <21"
+    "node": ">=18 <21"
   },
   "browserslist": "> 0.25%, not dead",
   "main": "frontend/js/index.tsx",
@@ -29,7 +29,7 @@
     "cookie": "^1.0.2",
     "lodash": "~4.17.21",
     "marked": "~12.0.2",
-    "node": "^24.6.0",
+    "python": "^0.0.4",
     "react": "19.1.1",
     "react-bootstrap": "~2.10.2",
     "react-dom": "19.1.1",

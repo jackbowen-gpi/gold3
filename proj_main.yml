@@ -6,7 +6,7 @@ jobs:
     name: Build gold3
     strategy:
       matrix:
-        python: [3.12]
+        python3: [3.13]
         node: [20.13]
     env:
       DATABASE_URL: "sqlite:///"
@@ -20,10 +20,12 @@ jobs:
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
         id: git
-      - name: Setup Python ${{ matrix.python }}
+      - name: Setup Python ${{ matrix.python3 }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python3 }}
+      - name: Set Poetry Python
+        run: poetry env use python${{ matrix.python }}
       - name: Setup Node ${{ matrix.node }}
         uses: actions/setup-node@v4
         with:
@@ -100,3 +102,5 @@ jobs:
           poetry run coverage xml -o junit/test-results.xml
         working-directory: backend
       - run: npm run test
+      - name: Check Python version
+        run: python --version

@@ -1,0 +1,1 @@
+config / frontend / openapi - ts.config.ts;

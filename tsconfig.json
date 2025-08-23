@@ -1,1 +1,33 @@
-config/frontend/tsconfig.json
+﻿{
+  "extends": "./config/frontend/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./frontend/js",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "esnext",
+    "target": "es6",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@gold3/*": ["./frontend/src/*"]
+    }
+  },
+  "include": [
+    "frontend/src",
+    "frontend/js",
+    "frontend/types",
+    "frontend/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx"
+  ]
+}

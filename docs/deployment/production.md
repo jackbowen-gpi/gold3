@@ -18,7 +18,7 @@ COPY frontend/ ./frontend/
 COPY webpack.config.js tsconfig.json ./
 RUN npm run build
 
-FROM python:3.12-slim AS backend
+FROM python:3.13 AS backend
 WORKDIR /app
 
 # Install system dependencies
@@ -80,7 +80,7 @@ worker: celery -A gold3 worker -l info
 beat: celery -A gold3 beat -l info
 
 # runtime.txt
-python-3.12.1
+python-3.13
 ```
 
 ### 3. Cloud Native (AWS/GCP/Azure)
