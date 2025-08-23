@@ -83,6 +83,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    working_dir: /app/backend      
     command: celery -A gold3 worker -l info
 
   celery-beat:
