@@ -10,6 +10,8 @@ from drf_spectacular.views import (
 )
 from rest_framework.routers import DefaultRouter
 from users.routes import routes as users_routes
+from django.urls import path
+
 
 
 router = DefaultRouter()
@@ -17,7 +19,8 @@ router = DefaultRouter()
 routes = common_routes + users_routes
 for route in routes:
     router.register(route["regex"], route["viewset"], basename=route["basename"])
-
+def trigger_error(request):
+    division_by_zero = 1 / 0
 urlpatterns = [
     path("", include("common.urls"), name="common"),
     path("admin/", admin.site.urls, name="admin"),
@@ -36,4 +39,10 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path('sentry-debug/', trigger_error),
 ]
+
+
+
+
+
