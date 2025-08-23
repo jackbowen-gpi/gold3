@@ -1,0 +1,26 @@
+# Development Dockerfile for frontend
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy configuration
+COPY config/frontend/ ./config/frontend/
+
+# Create symlinks for backward compatibility
+RUN ln -sf config/frontend/tsconfig.json . && \
+    ln -sf config/frontend/jest.config.js . && \
+    ln -sf config/frontend/eslint.config.js .eslintrc.js
+
+# Copy source code
+COPY frontend/ ./frontend/
+COPY webpack.config.js ./
+
+# Expose port
+EXPOSE 3000
+
+# Default command
+CMD ["npm", "run", "dev"]

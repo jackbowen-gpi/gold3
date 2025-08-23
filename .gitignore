@@ -55,3 +55,31 @@ tmp_email/
 .admin
 .history
 
+# Logs
+logs/
+*.log
+
+# Testing
+.pytest_cache/
+coverage.xml
+
+# Docker
+.dockerignore
+
+# IDE
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
