@@ -32,6 +32,17 @@ services:
           property: connectionString
       - fromGroup: python-services
       - fromGroup: integrations-credentials
+      - key: SENTRY_ENVIRONMENT
+        value: "local_base"
+      - key: SENTRY_RELEASE
+        value: "0.1.0"  
+      - key: SENTRY_API_KEY
+        value: "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"
+      - key: SENTRY_ORG
+        value: "JACK BOWEN"
+      - key: SENTRY_PROJECT_NAME
+        value: "gold3"
+
 
   # As there aren't free plans for Workers in Render, the configuration for
   # celery workers/beat will be commented by default
