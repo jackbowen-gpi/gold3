@@ -135,7 +135,7 @@ JS_REVERSE_EXCLUDE_NAMESPACES = ["admin"]
 
 # Sentry
 sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()], release=COMMIT_SHA)
-SENTRY_API_KEY="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"
-SENTRY_ORG="jack-bowen"
-SENTRY_PROJECT_NAME="gold3"
-RENDER_GIT_COMMIT="testcommit123"
+# SENTRY_API_KEY="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"
+# SENTRY_ORG="jack-bowen"
+# SENTRY_PROJECT_NAME="gold3"
+# RENDER_GIT_COMMIT="testcommit123"
