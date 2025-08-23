@@ -139,3 +139,4 @@ sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()], release=COMM
 # SENTRY_ORG="jack-bowen"
 # SENTRY_PROJECT_NAME="gold3"
 # RENDER_GIT_COMMIT="testcommit123"
+SENTRY_LOG_LEVEL = config("SENTRY_LOG_LEVEL", default="info")
