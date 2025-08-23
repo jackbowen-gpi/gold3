@@ -1,7 +1,9 @@
 from .base import *
 
 
-SECRET_KEY = "test"  # nosec
+DEBUG = True
+ALLOWED_HOSTS = ["*"]
+
 
 STATIC_ROOT = base_dir_join("staticfiles")
 STATIC_URL = "/static/"
