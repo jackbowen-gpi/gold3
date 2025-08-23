@@ -1,0 +1,109 @@
+# Development Docker Configuration
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: gold3_dev
+      POSTGRES_USER: gold3
+      POSTGRES_PASSWORD: gold3_dev_password
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gold3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    volumes:
+      - ./backend:/app/backend
+      - ./config:/app/config
+      - ./docs:/app/docs
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://gold3:gold3_dev_password@db:5432/gold3_dev
+      - REDIS_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=gold3.settings.local_base
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: python manage.py runserver 0.0.0.0:8000
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.dev
+    volumes:
+      - ./frontend:/app/frontend
+      - ./config/frontend:/app/config/frontend
+      - node_modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    command: npm run dev
+
+  celery:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    volumes:
+      - ./backend:/app/backend
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://gold3:gold3_dev_password@db:5432/gold3_dev
+      - REDIS_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=gold3.settings.local_base
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A gold3 worker -l info
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    volumes:
+      - ./backend:/app/backend
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://gold3:gold3_dev_password@db:5432/gold3_dev
+      - REDIS_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=gold3.settings.local_base
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A gold3 beat -l info
+
+volumes:
+  postgres_data_dev:
+  redis_data_dev:
+  node_modules:

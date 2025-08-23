@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "defender",
     "django_guid",
+    "api",
     "common",
     "users",
 ]

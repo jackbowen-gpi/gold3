@@ -1,93 +1,219 @@
-# Django React Boilerplate
+# Gold3 - Large Scale Django + React Application
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](code_of_conduct.md)
 [![License: MIT](https://img.shields.io/github/license/vintasoftware/django-react-boilerplate.svg)](LICENSE.txt)
 
-## About
+A well-architected Django + React application designed for large-scale development with domain-driven design, proper separation of concerns, and comprehensive testing.
 
-A [Django](https://www.djangoproject.com/) project boilerplate/template with a multitude of state-of-the-art libraries and tools. If pairing Django with React is a possibility for your project or spinoff, this is the best solution available. Save time with tools like:
+## 🏗️ Architecture
 
--   [React](https://react.dev/), for building interactive UIs
--   [TypeScript](https://www.typescriptlang.org/), for static type checking
--   [Poetry](https://python-poetry.org/), for managing the environment and its dependencies
--   [django-js-reverse](https://github.com/vintasoftware/django-js-reverse), for generating URLs on JS
--   [React Bootstrap](https://react-bootstrap.github.io/), for responsive styling
--   [Webpack](https://webpack.js.org/), for bundling static assets
--   [Celery](https://docs.celeryq.dev/en/stable/), for background worker tasks
--   [WhiteNoise](https://whitenoise.readthedocs.io/en/stable/) with [brotlipy](https://github.com/python-hyper/brotlicffi), for efficient static files serving
--   [ruff](https://github.com/astral-sh/ruff) and [ESLint](https://eslint.org/) with [pre-commit](https://pre-commit.com/) for automated quality assurance (does not replace proper testing!)
+This project follows modern architectural patterns for large-scale applications:
 
-For continuous integration, a [Github Action](https://github.com/features/actions) configuration `.github/workflows/main.yml` is included.
+- **Domain-Driven Design (DDD)** for backend organization
+- **Feature-based organization** for frontend code  
+- **Service Layer Pattern** for business logic
+- **Repository Pattern** for data access
+- **API Versioning** for backward compatibility
+- **Comprehensive testing strategy**
 
-Also, includes a Render.com `render.yaml` and a working Django `production.py` settings, enabling easy deployments with ['Deploy to Render' button](https://render.com/docs/deploy-to-render). The `render.yaml` includes the following:
+See [Architecture Documentation](docs/architecture/README.md) for detailed information.
 
--   PostgreSQL, for DB
--   Redis, for Celery
+## 📁 Project Structure
 
-## Features Catalogue
+```
+├── backend/                    # Django backend
+│   ├── domains/               # Domain-driven business logic
+│   │   ├── authentication/    # Auth domain
+│   │   ├── core/             # Core business domain
+│   │   └── shared/           # Shared domain components
+│   ├── api/                  # Versioned API endpoints
+│   │   ├── v1/              # API version 1
+│   │   └── v2/              # API version 2 (future)
+│   ├── tests/               # Organized testing
+│   │   ├── unit/           # Unit tests
+│   │   ├── integration/    # Integration tests
+│   │   └── e2e/            # End-to-end tests
+│   ├── common/             # Common Django app
+│   └── users/              # User management app
+├── frontend/                  # React frontend
+│   ├── src/
+│   │   ├── features/         # Feature-based organization
+│   │   │   └── authentication/ # Auth feature
+│   │   └── shared/           # Shared frontend components
+│   │       ├── components/   # Reusable UI components
+│   │       ├── hooks/       # Custom React hooks
+│   │       ├── utils/       # Utility functions
+│   │       ├── types/       # TypeScript types
+│   │       ├── api/         # API client code
+│   │       └── constants/   # Application constants
+│   ├── sass/                # Stylesheets
+│   └── assets/              # Static assets
+├── config/                   # Configuration management
+│   ├── frontend/            # Frontend configs (webpack, etc.)
+│   ├── backend/             # Backend configs (future)
+│   ├── deployment/          # Docker, CI/CD configs
+│   └── ci/                  # Continuous integration
+└── docs/                    # Documentation
+    ├── architecture/        # Architecture documentation
+    ├── development/         # Development guides
+    └── api/                 # API documentation
+```
 
-### Frontend
+## 🚀 Quick Start
 
--   `react` for building interactive UIs
--   `react-dom` for rendering the UI
--   `react-router` for page navigation
--   `webpack` for bundling static assets
--   `webpack-bundle-tracker` for providing the bundled assets to Django
--   Styling
-    -   `bootstrap` for providing responsive stylesheets
-    -   `react-bootstrap` for providing components built on top of Bootstrap CSS without using plugins
-    -   `sass` for providing compatibility with SCSS files
--   State management and backend integration
-    -   `axios` for performing asynchronous calls
-    -   `cookie` for easy integration with Django using the `csrftoken` cookie
-    -   `openapi-ts` for generating TypeScript client API code from the backend OpenAPI schema
-    -   `history` for providing browser history to Connected React Router
--   Utilities
-    -   `lodash` for general utility functions
-    -   `classnames` for easy working with complex CSS class names on components
-    -   `react-refresh` for improving QoL while developing through automatic browser refreshing
+### Prerequisites
 
-### Backend
+- Python 3.12+
+- Node.js 20+
+- Poetry (for Python dependencies)
+- PostgreSQL
 
--   `django` for building backend logic using Python
--   `djangorestframework` for building a REST API on top of Django
--   `drf-spectacular` for generating an OpenAPI schema for the Django REST API
--   `django-webpack-loader` for rendering the bundled frontend assets
--   `django-js-reverse` for easy handling of Django URLs on JS
--   `django-upgrade` for automatically upgrading Django code to the target version on pre-commit
--   `django-guid` for adding a unique correlation ID to log messages from Django requests
--   `psycopg` for using PostgreSQL database
--   `sentry-sdk` for error monitoring
--   `python-decouple` for reading environment variables on settings files
--   `celery` for background worker tasks
--   `django-csp` for setting the draft security HTTP header Content-Security-Policy
--   `django-permissions-policy` for setting the draft security HTTP header Permissions-Policy
--   `django-defender` for blocking brute force attacks against login
--   `whitenoise` and `brotlipy` for serving static assets
+### Installation
 
-## Share your project!
+1. **Clone and install dependencies:**
+   ```bash
+   git clone <repository-url>
+   cd gold3
+   
+   # Install Python dependencies
+   poetry install
+   
+   # Install Node.js dependencies
+   npm install
+   ```
 
-Several people have leveraged our boilerplate to start spinoffs or to boost their efforts in the challenging pursuit of securing funding. Starting with a solid foundation allows you to create more resilient products and focus on what really matters: discovering and delivering value to your customers. If you are one of those people, we're eager to help you even more! We can spread the word about your project across our social media platforms, giving you access to a broader audience.
+2. **Environment setup:**
+   ```bash
+   # Copy environment template
+   cp backend/gold3/settings/local.py.example backend/gold3/settings/local.py
+   
+   # Create .env file with your configuration
+   ```
 
-Send us an email at contact@vintasoftware.com telling us a bit more about how our boilerplate helped you boost your project.
+3. **Database setup:**
+   ```bash
+   poetry run python backend/manage.py migrate
+   poetry run python backend/manage.py createsuperuser
+   ```
 
-## Project bootstrap [![main](https://github.com/vintasoftware/django-react-boilerplate/actions/workflows/main.yml/badge.svg)](https://github.com/vintasoftware/django-react-boilerplate/actions/workflows/main.yml) [![Known Vulnerabilities](https://snyk.io/test/github/vintasoftware/django-react-boilerplate/badge.svg)](https://snyk.io/test/github/vintasoftware/django-react-boilerplate)
+4. **Run development servers:**
+   ```bash
+   # Terminal 1: Frontend dev server
+   npm run dev
+   
+   # Terminal 2: Backend dev server
+   poetry run python backend/manage.py runserver
+   ```
 
--   [ ] Make sure you have Python 3.12 installed
--   [ ] Install Django with `pip install django`, to have the `django-admin` command available
--   [ ] Open the command line and go to the directory you want to start your project in
--   [ ] Start your project using (replace `project_name` with your project name and remove the curly braces):
-    ```
-    django-admin startproject gold3 --extension py,json,yml,yaml,toml --name Dockerfile,README.md,.env.example,.gitignore,Makefile --template=https://github.com/vintasoftware/django-react-boilerplate/archive/refs/heads/main.zip
-    ```
-    Alternatively, you may start the project in the current directory by placing a `.` right after the project name, using the following command:
-    ```
-    django-admin startproject gold3 . --extension py,json,yml,yaml,toml --name Dockerfile,README.md,.env.example,.gitignore,Makefile --template=https://github.com/vintasoftware/django-react-boilerplate/archive/refs/heads/main.zip
-    ```
-In the next steps, always remember to replace gold3 with your project's name (in case it isn't yet):
--   [ ] Above: don't forget the `--extension` and `--name` params!
--   [ ] Go into project's root directory: `cd gold3`
--   [ ] Change the first line of README to the name of the project
+Access the application at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000/api/v1/
+- Admin panel: http://localhost:8000/admin/
+
+## 🛠️ Development
+
+### Code Quality
+
+The project includes comprehensive code quality tools:
+
+```bash
+# Backend linting and formatting
+poetry run ruff check backend/
+poetry run ruff format backend/
+
+# Frontend linting
+npm run lint
+
+# Type checking
+npm run tsc
+
+# Run tests
+poetry run python backend/manage.py test
+npm test
+```
+
+### Pre-commit Hooks
+
+Install pre-commit hooks for automatic code quality checks:
+
+```bash
+poetry run pre-commit install
+```
+
+### Adding New Features
+
+#### Backend (Domain)
+
+1. Create domain directory: `backend/domains/your_domain/`
+2. Implement repository, service, and models
+3. Add to API version in `backend/api/v1/`
+4. Write comprehensive tests
+
+#### Frontend (Feature)
+
+1. Create feature directory: `frontend/src/features/your_feature/`
+2. Organize by components, hooks, services, types
+3. Export from feature index file
+4. Add tests for components and hooks
+
+See [Development Guide](docs/development/README.md) for detailed instructions.
+
+## 🧪 Testing
+
+### Backend Testing
+
+- **Unit Tests**: Test services and repositories in isolation
+- **Integration Tests**: Test API endpoints and database interactions
+- **E2E Tests**: Test complete user workflows
+
+### Frontend Testing
+
+- **Component Tests**: Test React components
+- **Hook Tests**: Test custom React hooks  
+- **Integration Tests**: Test feature workflows
+- **E2E Tests**: Test complete user journeys
+
+## 📚 Documentation
+
+- [Architecture Overview](docs/architecture/README.md)
+- [Development Guide](docs/development/README.md)
+- [Environment Setup](docs/development/environment.md)
+- [API Documentation](docs/api/) (auto-generated)
+
+## 🔗 Key Features
+
+### Backend Architecture
+
+- ✅ Domain-driven design organization
+- ✅ Service layer for business logic
+- ✅ Repository pattern for data access
+- ✅ API versioning strategy
+- ✅ Comprehensive exception handling
+- ✅ Structured testing approach
+
+### Frontend Architecture
+
+- ✅ Feature-based code organization
+- ✅ Reusable component library
+- ✅ Custom hooks for state management
+- ✅ TypeScript for type safety
+- ✅ Utility functions and constants
+- ✅ Comprehensive testing setup
+
+### Development Experience
+
+- ✅ Hot reload for development
+- ✅ Automated code formatting
+- ✅ Pre-commit hooks
+- ✅ Comprehensive linting
+- ✅ Type checking
+- ✅ Organized configuration files
+
+This architecture provides a solid foundation for building large-scale applications with clear separation of concerns, maintainable code, and excellent developer experience.
+
+## Original Boilerplate Features
+
+This project is built on top of a Django React boilerplate with the following features:
 -   [ ] Add an email address to the `ADMINS` settings variable in `gold3/backend/gold3/settings/base.py`
 -   [ ] Change the `SERVER_EMAIL` to the email address used to send e-mails in `gold3/backend/gold3/settings/production.py`
 
