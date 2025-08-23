@@ -7,7 +7,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=2.0.1
-RUN chmod +x manage.py
+
 RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
 
 # Install system dependencies
@@ -25,6 +25,8 @@ RUN poetry install --with dev --no-root --no-interaction --no-ansi
 
 WORKDIR /home/user/app/backend
 COPY backend/ /home/user/app/backend
+
+RUN chmod +x manage.py
 
 USER user
 CMD gunicorn gold3.wsgi --log-file - -b 0.0.0.0:8080 --reload
