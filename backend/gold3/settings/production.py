@@ -1,7 +1,6 @@
 import sentry_sdk
 from decouple import Csv, config
 from django_guid.integrations import SentryIntegration as DjangoGUIDSentryIntegration
-from sentry_sdk.integrations.django import DjangoIntegration
 
 from .base import *
 
