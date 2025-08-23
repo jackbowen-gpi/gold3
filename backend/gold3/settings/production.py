@@ -134,9 +134,14 @@ LOGGING = {
 JS_REVERSE_EXCLUDE_NAMESPACES = ["admin"]
 
 # Sentry
-sentry_sdk.init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()], release=COMMIT_SHA)
-# SENTRY_API_KEY="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"
-# SENTRY_ORG="jack-bowen"
-# SENTRY_PROJECT_NAME="gold3"
-# RENDER_GIT_COMMIT="testcommit123"
+sentry_sdk.init(
+    dsn="https://06c1b35dd206aa29f235ec05eb6d7caf@o4509890398781440.ingest.us.sentry.io/4509890934669312",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    integrations=[DjangoIntegration()],
+    # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
+    # We recommend adjusting this value in production.   
+    traces_sample_rate=0.2   
+)
+
 SENTRY_LOG_LEVEL = config("SENTRY_LOG_LEVEL", default="info")
