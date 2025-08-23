@@ -17,7 +17,8 @@ router = DefaultRouter()
 routes = common_routes + users_routes
 for route in routes:
     router.register(route["regex"], route["viewset"], basename=route["basename"])
-
+def trigger_error(request):
+    division_by_zero = 1 / 0  # noqa: F841  # nosec
 urlpatterns = [
     path("", include("common.urls"), name="common"),
     path("admin/", admin.site.urls, name="admin"),
@@ -36,4 +37,5 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path('sentry-debug/', trigger_error),
 ]
