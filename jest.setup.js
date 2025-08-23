@@ -1,1 +1,1 @@
-import "@testing-library/jest-dom";
+config/frontend/jest.setup.js

@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 import django_js_reverse.views
+from api.v1.urls import urlpatterns as v1_urls
 from common.routes import routes as common_routes
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -23,6 +24,9 @@ urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("admin/defender/", include("defender.urls")),
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
+    # API versioning
+    path("api/v1/", include(v1_urls), name="api_v1"),
+    # Legacy API support (will be deprecated)
     path("api/", include(router.urls), name="api"),
     # drf-spectacular
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
