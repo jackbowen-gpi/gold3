@@ -42,11 +42,4 @@ if [ -n "$SENTRY_API_KEY" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT_NAM
     rm ./frontend/webpack_bundles/*.js.map
 fi
 
-
-
-if [ -n "$SENTRY_API_KEY" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT_NAME" ] && [ -n "$RENDER_GIT_COMMIT" ]; then
-    npx @sentry/cli --auth-token=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 releases --org="JACK BOWEN" --project=$gold3 files $RENDER_GIT_COMMIT upload-sourcemaps ./frontend/webpack_bundles/ --url-prefix "~/static/webpack_bundles/" --rewrite
-    rm ./frontend/webpack_bundles/*.js.map
-fi
-
 echo "-----> Post-compile done"
