@@ -55,3 +55,6 @@ docker_backend_update_schema:
 
 docker_frontend_update_api:
 	docker compose run --rm frontend npm run openapi-ts
+
+docker_jb_test:
+	docker compose run --rm backend python manage.py check --deploy --fail-level WARNING
