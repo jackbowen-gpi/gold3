@@ -7,7 +7,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=2.0.1
-
+RUN chmod +x manage.py
 RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
 
 # Install system dependencies
