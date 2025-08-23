@@ -4,7 +4,7 @@
   "private": true,
   "description": "gold3 frontend.",
   "engines": {
-    "node": ">=20 <21"
+    "node": ">=18 <21"
   },
   "browserslist": "> 0.25%, not dead",
   "main": "frontend/js/index.tsx",

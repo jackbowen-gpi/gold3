@@ -35,10 +35,58 @@ module.exports = (env, argv) => {
     output: isDev ? localhostOutput : productionOutput,
     module: {
       rules: [
+        // Explicit rules so swc-loader receives parser options for JS vs TS
         {
-          test: /\.(js|mjs|jsx|ts|tsx)$/,
+          test: /\.(ts|tsx)$/,
           use: {
             loader: "swc-loader",
+            options: {
+              swcrc: false,
+              jsc: {
+                parser: {
+                  syntax: "typescript",
+                  tsx: true,
+                  decorators: true,
+                  dynamicImport: true
+                },
+                transform: {
+                  react: {
+                    runtime: "automatic",
+                    development: isDev
+                  }
+                }
+              },
+              env: {
+                mode: "entry",
+                coreJs: 3
+              }
+            }
+          },
+        },
+        {
+          test: /\.(js|mjs|jsx)$/,
+          use: {
+            loader: "swc-loader",
+            options: {
+              swcrc: false,
+              jsc: {
+                parser: {
+                  syntax: "ecmascript",
+                  jsx: true,
+                  dynamicImport: true
+                },
+                transform: {
+                  react: {
+                    runtime: "automatic",
+                    development: isDev
+                  }
+                }
+              },
+              env: {
+                mode: "entry",
+                coreJs: 3
+              }
+            }
           },
         },
         {

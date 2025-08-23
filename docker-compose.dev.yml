@@ -1,6 +1,3 @@
-# Development Docker Configuration
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -29,13 +26,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  broker:
+    image: rabbitmq:3-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile.dev
     volumes:
-      - ./backend:/app/backend
+      - ./backend:/app
+      - ./:/repo:ro
+      - ./frontend:/app/frontend
       - ./config:/app/config
       - ./docs:/app/docs
     ports:
@@ -50,6 +59,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      broker:
+        condition: service_healthy
     command: python manage.py runserver 0.0.0.0:8000
 
   frontend:
@@ -58,6 +69,7 @@ services:
       dockerfile: frontend/Dockerfile.dev
     volumes:
       - ./frontend:/app/frontend
+      - ./frontend/public:/app/public
       - ./config/frontend:/app/config/frontend
       - node_modules:/app/node_modules
     ports:
@@ -72,7 +84,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile.dev
     volumes:
-      - ./backend:/app/backend
+      - ./backend:/app
     environment:
       - DEBUG=True
       - DATABASE_URL=postgresql://gold3:gold3_dev_password@db:5432/gold3_dev
@@ -83,7 +95,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    working_dir: /app/backend      
+      broker:
+        condition: service_healthy
+    working_dir: /app
     command: celery -A gold3 worker -l info
 
   celery-beat:
@@ -91,7 +105,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile.dev
     volumes:
-      - ./backend:/app/backend
+      - ./backend:/app
     environment:
       - DEBUG=True
       - DATABASE_URL=postgresql://gold3:gold3_dev_password@db:5432/gold3_dev
@@ -101,6 +115,8 @@ services:
       db:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      broker:
         condition: service_healthy
     command: celery -A gold3 beat -l info
 

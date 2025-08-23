@@ -1,17 +1,24 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var Sentry = require("@sentry/react");
-var cookie_1 = require("cookie");
-var api_1 = require("./api");
-var Home_1 = require("./pages/Home");
-api_1.OpenAPI.interceptors.request.use(function (request) {
-    var csrftoken = (0, cookie_1.parse)(document.cookie).csrftoken;
-    if (request.headers && csrftoken) {
-        request.headers["X-CSRFTOKEN"] = csrftoken;
-    }
-    return request;
+import React from "react";
+import * as Sentry from "@sentry/react";
+import { parse } from "cookie";
+import { OpenAPI } from "./api";
+import Home from "./pages/Home";
+
+// Attach CSRF token to API requests
+OpenAPI.interceptors.request.use((request) => {
+  const csrftoken = parse(document.cookie).csrftoken;
+  if (request.headers && csrftoken) {
+    request.headers["X-CSRFTOKEN"] = csrftoken;
+  }
+  return request;
 });
-var App = function () { return (<Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-    <Home_1.default />
-  </Sentry.ErrorBoundary>); };
-exports.default = App;
+
+const ErrorBoundary = Sentry.ErrorBoundary;
+
+const App = () => React.createElement(
+  ErrorBoundary,
+  { fallback: React.createElement('p', null, 'An error has occurred') },
+  React.createElement(Home, null)
+);
+
+export default App;

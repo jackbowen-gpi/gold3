@@ -1,91 +1,101 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.slugify = exports.getErrorMessage = exports.debounce = exports.truncateText = exports.capitalize = exports.isValidEmail = exports.formatDate = void 0;
 /**
- * Utility function to format dates consistently across the application
+ * Utility function to format dates consistently across the application.
+ * @param {Date|string} date - The date to format.
+ * @param {'short'|'long'|'relative'} [format='short'] - The format type.
+ * @returns {string}
  */
-var formatDate = function (date, format) {
-    if (format === void 0) { format = 'short'; }
-    var dateObj = typeof date === 'string' ? new Date(date) : date;
-    switch (format) {
-        case 'short':
-            return dateObj.toLocaleDateString();
-        case 'long':
-            return dateObj.toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            });
-        case 'relative':
-            return new Intl.RelativeTimeFormat().format(Math.round((dateObj.getTime() - Date.now()) / (1000 * 60 * 60 * 24)), 'day');
-        default:
-            return dateObj.toLocaleDateString();
-    }
-};
-exports.formatDate = formatDate;
+export function formatDate(date, format = "short") {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  switch (format) {
+    case "short":
+      return dateObj.toLocaleDateString();
+    case "long":
+      return dateObj.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    case "relative":
+      return new Intl.RelativeTimeFormat().format(
+        Math.round((dateObj.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+        "day"
+      );
+    default:
+      return dateObj.toLocaleDateString();
+  }
+}
+
 /**
- * Utility function to validate email addresses
+ * Utility function to validate email addresses.
+ * @param {string} email
+ * @returns {boolean}
  */
-var isValidEmail = function (email) {
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
-exports.isValidEmail = isValidEmail;
+export function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
 /**
- * Utility function to capitalize first letter of a string
+ * Utility function to capitalize first letter of a string.
+ * @param {string} str
+ * @returns {string}
  */
-var capitalize = function (str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-};
-exports.capitalize = capitalize;
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 /**
- * Utility function to truncate text with ellipsis
+ * Utility function to truncate text with ellipsis.
+ * @param {string} text
+ * @param {number} maxLength
+ * @returns {string}
  */
-var truncateText = function (text, maxLength) {
-    if (text.length <= maxLength)
-        return text;
-    return text.slice(0, maxLength).trim() + '...';
-};
-exports.truncateText = truncateText;
+export function truncateText(text, maxLength) {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + "...";
+}
+
 /**
- * Utility function to debounce function calls
+ * Utility function to debounce function calls.
+ * @param {Function} func
+ * @param {number} delay
+ * @returns {Function}
  */
-var debounce = function (func, delay) {
-    var timeoutId;
-    return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(function () { return func.apply(void 0, args); }, delay);
-    };
-};
-exports.debounce = debounce;
+export function debounce(func, delay) {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}
+
 /**
- * Utility function to get error message from various error types
+ * Utility function to get error message from various error types.
+ * @param {unknown} error
+ * @returns {string}
  */
-var getErrorMessage = function (error) {
-    if (error instanceof Error) {
-        return error.message;
-    }
-    if (typeof error === 'string') {
-        return error;
-    }
-    if (error && typeof error === 'object' && 'message' in error) {
-        return String(error.message);
-    }
-    return 'An unknown error occurred';
-};
-exports.getErrorMessage = getErrorMessage;
+export function getErrorMessage(error) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error && typeof error === "object" && "message" in error) {
+    return String(error.message);
+  }
+  return "An unknown error occurred";
+}
+
 /**
- * Utility function to generate URL-friendly slugs
+ * Utility function to generate URL-friendly slugs.
+ * @param {string} text
+ * @returns {string}
  */
-var slugify = function (text) {
-    return text
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '') // Remove special characters
-        .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
-        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-};
-exports.slugify = slugify;
+export function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[\s_-]+/g, "-") // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}

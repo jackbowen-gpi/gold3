@@ -3,8 +3,10 @@ from django.core.management.utils import get_random_secret_key
 from .base import *
 
 
-DEBUG = False
+# For local development we want DEBUG on and to avoid forcing HTTPS redirects
+DEBUG = True
 
+# Host used for some local dev CSP entries
 HOST = "http://localhost:8080"
 
 SECRET_KEY = get_random_secret_key()
@@ -76,9 +78,10 @@ CSP_SCRIPT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
 CSP_CONNECT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
 CSP_FONT_SRC += [LOCAL_HOST_URL]
 CSP_IMG_SRC += [LOCAL_HOST_URL]
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True   
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31536000  # 1 year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# In development don't require HTTPS or secure cookies
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False

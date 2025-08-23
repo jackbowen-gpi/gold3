@@ -1,10 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthService = exports.useAuth = void 0;
-var useAuth_1 = require("./hooks/useAuth");
-Object.defineProperty(exports, "useAuth", { enumerable: true, get: function () { return useAuth_1.useAuth; } });
-var AuthService_1 = require("./services/AuthService");
-Object.defineProperty(exports, "AuthService", { enumerable: true, get: function () { return AuthService_1.AuthService; } });
-// Component exports would go here when created
+// Export authentication hooks and services using ES module syntax for better compatibility and readability
+
+// Export the custom authentication hook
+export { useAuth } from "./hooks/useAuth";
+
+// Export the authentication service for API calls
+export { AuthService } from "./services/AuthService";
+
+// When you create authentication-related components, export them here for easy access throughout your app
+// Example:
 // export { LoginForm } from './components/LoginForm';
 // export { RegisterForm } from './components/RegisterForm';

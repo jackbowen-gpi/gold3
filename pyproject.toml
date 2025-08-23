@@ -8,7 +8,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.12"
 Django = "^5.2.5"
 celery = {extras = ["redis"], version = "^5.3.6"}
 celery-redbeat = "^2.1.1"
