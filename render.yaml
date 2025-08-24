@@ -1,1 +1,1 @@
-config/deployment/render.yaml
+bash config/deployment/render_build.sh
