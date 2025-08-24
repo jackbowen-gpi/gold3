@@ -114,9 +114,8 @@ module.exports = (env, argv) => {
       // Proxy API requests to the Django backend so the frontend dev-server can
       // act as a same-origin proxy during development. This avoids cross-site
       // cookie / SameSite issues when the frontend is served from :3000 and the
-      // backend runs on :8000. We map /api to the backend host (host.docker.internal
-      // is used so the browser on the host can reach the containerized backend).
-      // Proxy API requests to the Django backend. Use array schema to satisfy newer dev-server config validation.
+      // backend runs on :8000. Use the array schema expected by newer
+      // webpack-dev-server versions.
       proxy: [
         {
           context: ['/api'],
