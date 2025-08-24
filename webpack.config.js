@@ -116,14 +116,15 @@ module.exports = (env, argv) => {
       // cookie / SameSite issues when the frontend is served from :3000 and the
       // backend runs on :8000. We map /api to the backend host (host.docker.internal
       // is used so the browser on the host can reach the containerized backend).
-      proxy: {
-        '/api': {
-          // When running inside docker-compose proxy to the backend service directly.
+      // Proxy API requests to the Django backend. Use array schema to satisfy newer dev-server config validation.
+      proxy: [
+        {
+          context: ['/api'],
           target: 'http://backend:8000',
           secure: false,
           changeOrigin: true,
         },
-      },
+      ],
     },
     // Reduce internal webpack infrastructure logs (keeps errors visible but silences info/debug)
     infrastructureLogging: {
