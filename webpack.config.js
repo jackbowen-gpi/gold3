@@ -13,8 +13,10 @@ module.exports = (env, argv) => {
   const localhostOutput = {
     path: path.resolve("./frontend/webpack_bundles/"),
   publicPath: `${webpackPublicHost}/frontend/webpack_bundles/`,
-  // Use chunkhash in dev so filenames match the production manifest (helps dockerized smoke tests)
-  filename: "[name]-[chunkhash].js",
+  // In development, emit un-hashed filenames so the dev-server can be
+  // referenced as a stable URL (e.g. /frontend/webpack_bundles/main.js).
+  // Production continues to use hashed filenames for caching.
+  filename: "[name].js",
   };
   const productionOutput = {
     path: path.resolve("./frontend/webpack_bundles/"),
@@ -108,6 +110,19 @@ module.exports = (env, argv) => {
         // memory and the backend cannot resolve them.
         writeToDisk: true,
         stats: 'errors-warnings',
+      },
+      // Proxy API requests to the Django backend so the frontend dev-server can
+      // act as a same-origin proxy during development. This avoids cross-site
+      // cookie / SameSite issues when the frontend is served from :3000 and the
+      // backend runs on :8000. We map /api to the backend host (host.docker.internal
+      // is used so the browser on the host can reach the containerized backend).
+      proxy: {
+        '/api': {
+          // When running inside docker-compose proxy to the backend service directly.
+          target: 'http://backend:8000',
+          secure: false,
+          changeOrigin: true,
+        },
       },
     },
     // Reduce internal webpack infrastructure logs (keeps errors visible but silences info/debug)

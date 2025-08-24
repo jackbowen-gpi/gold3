@@ -33,6 +33,10 @@ dev-backend: ## Start Django development server
 	@echo "🔧 Starting Django development server..."
 	poetry run python backend/manage.py runserver
 
+.PHONY: seed-dev-user
+seed-dev-user: ## Seed a developer user into the local DB
+	poetry run python backend/manage.py seed_dev_user
+
 .PHONY: dev-frontend
 dev-frontend: ## Start React development server
 	@echo "⚛️  Starting React development server..."

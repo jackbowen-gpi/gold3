@@ -102,7 +102,9 @@ See [Architecture Documentation](docs/architecture/README.md) for detailed infor
    npm run dev
    
    # Terminal 2: Backend dev server
-   poetry run python backend/manage.py runserver
+    # ensure a dev user exists (optional) and then start the backend
+    make seed-dev-user
+    poetry run python backend/manage.py runserver
    ```
 
 Access the application at:
@@ -238,6 +240,16 @@ npm run tsc
 # Run tests
 poetry run python backend/manage.py test
 npm test
+
+### Local dev credentials
+
+For convenience during local development a dev user is available in `docs/development/DEV_CREDENTIALS.md`.
+
+You can seed the default dev user with:
+
+```bash
+make seed-dev-user
+```
 ```
 
 ### Pre-commit Hooks

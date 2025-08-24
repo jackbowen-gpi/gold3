@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 import type { AuthState, LoginCredentials, RegisterData } from '../types';
 import { AuthService } from '../services/AuthService';
+import { AuthContext } from '../AuthContext';
 
 const initialState: AuthState = {
   user: null,
@@ -10,6 +11,9 @@ const initialState: AuthState = {
 };
 
 export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context) return context;
+
   const [state, setState] = useState<AuthState>(initialState);
 
   const login = useCallback(async (credentials: LoginCredentials) => {

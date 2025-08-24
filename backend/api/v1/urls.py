@@ -13,4 +13,5 @@ for route in common_routes + users_routes:
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/', include('users.urls_auth')),
 ]

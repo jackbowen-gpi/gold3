@@ -5,6 +5,7 @@
     "lib": ["es2022"],
     "moduleResolution": "nodenext",
     "allowJs": true,
+  "jsx": "react-jsx",
     "checkJs": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

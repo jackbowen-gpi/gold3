@@ -25,6 +25,12 @@
   <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
 
   <!-- Webpack rendered Javascript -->
+  {% comment %}
+    Use django-webpack-loader to render the JS bundle so the template pulls the
+    exact hashed filename from `webpack-stats.json`. This avoids hard-coding
+    `main.js` which may not exist and prevents DNS resolution issues when the
+    backend would otherwise emit Docker service names for the browser.
+  {% endcomment %}
   {% render_bundle 'main' 'js' 'DEFAULT' %}
   {% block scripts %}{% endblock %}
 </body>

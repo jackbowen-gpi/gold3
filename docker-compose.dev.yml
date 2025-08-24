@@ -78,6 +78,10 @@ services:
       - ./public:/app/public
       - ./config/frontend:/app/config/frontend
       - node_modules:/app/node_modules
+      # Expose webpack output and stats to the host so the backend can read
+      # webpack-stats.json and the generated webpack_bundles directory.
+      - ./webpack-stats.json:/app/webpack-stats.json
+      - ./frontend/webpack_bundles:/app/frontend/webpack_bundles
     ports:
       - "3000:3000"
     environment:
