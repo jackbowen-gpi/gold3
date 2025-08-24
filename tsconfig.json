@@ -6,7 +6,9 @@
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-  "types": ["jest", "@testing-library/jest-dom"],
+  "allowJs": true,
+  "checkJs": true,
+  "types": ["jest", "@testing-library/jest-dom", "node"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -14,8 +16,19 @@
   },
   "include": [
     "frontend/js/**/*",
+    "frontend/**/*.ts",
+    "frontend/**/*.tsx",
+    "src/**/*",
     "frontend/assets/**/*",
     "openapi-ts.config.ts",
     "config/frontend/**/*"
+  ]
+  ,
+  "exclude": [
+    "frontend/webpack_bundles",
+    "webpack_bundles",
+    "node_modules",
+    "dist",
+    "build"
   ]
 }
