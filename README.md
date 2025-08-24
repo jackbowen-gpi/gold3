@@ -158,6 +158,66 @@ CI note
 
 The GitHub Actions smoke job builds the frontend before starting the dev stack so the generated `webpack-stats.json` references concrete publicPath URLs and hashed filenames the backend can consume. If you change `WEBPACK_PUBLIC_HOST` for CI, update the workflow accordingly.
 
+## Developer health & frontend checks
+
+We added lightweight developer-facing health and frontend checks to make local development and CI troubleshooting easier. These are development-only helpers and do not expose sensitive production data.
+
+What is available
+- UI: `/dev/health/` — small web page that shows a summary and details for each service (polled every 5s).
+- JSON API: `/dev-health/` — returns aggregated JSON with checks for `db`, `redis`, `broker`, `celery`, and `frontend`.
+- Readiness: `/healthz/` — returns HTTP 200 when required services are healthy, otherwise HTTP 503. Useful for CI readiness probes.
+
+Config / environment
+- `FRONTEND_DEV_HOST` (default: `frontend`) — host used to check the frontend dev-server from backend container.
+- `FRONTEND_DEV_PORT` (default: `3000`) — port used to check the frontend dev-server.
+- `FRONTEND_DEV_SCHEME` (default: `http`) — scheme used for the frontend HTTP root check.
+- `DEV_HEALTH_TOKEN` (optional) — when set, the UI requires this token (via `X-DEV-HEALTH-TOKEN` header or `?token=` query param). Set in `docker-compose.dev.yml` for the backend service to protect the UI.
+- `DEV_HEALTH_API_PROTECT` (optional, boolean) — when true, the JSON API also requires the token.
+- `DEV_REQUIRED_SERVICES` (optional, list) — controls which services `/healthz/` treats as required (defaults to `['db', 'frontend']`). Configure in your local Django settings.
+
+Quick examples
+- Add the token and host/port in `docker-compose.dev.yml` under the `backend` service environment (example):
+
+```yaml
+services:
+    backend:
+        environment:
+            - FRONTEND_DEV_HOST=frontend
+            - FRONTEND_DEV_PORT=3000
+            - DEV_HEALTH_TOKEN=mysupersecret
+            - DEV_HEALTH_API_PROTECT=True
+```
+
+- Visit the UI in your browser (backend must be running):
+
+    http://localhost:8000/dev/health/
+
+- Curl the JSON API (when protected, pass token either via header or query):
+
+```powershell
+# header
+curl -H "X-DEV-HEALTH-TOKEN: mysupersecret" http://localhost:8000/dev-health/
+
+# query
+curl http://localhost:8000/dev-health/?token=mysupersecret
+```
+
+- Readiness probe example (CI):
+
+```powershell
+curl -I http://localhost:8000/healthz/   # 200 if required services healthy, 503 otherwise
+```
+
+Security & scope
+- Everything is intentionally guarded by `DEBUG` in Django: these endpoints return 404 when `DEBUG` is False.
+- If `DEV_HEALTH_TOKEN` is set, the UI and optionally the API require the token. This provides a lightweight protection for LAN/dev environments.
+- Do not enable these endpoints in production.
+
+Troubleshooting
+- If a service shows as skipped (`skipped: true`) it means the check couldn't run (e.g., `REDIS_URL` not set or `redis` package not installed). Adjust your local settings or install the optional package to enable the check.
+- Broker parsing is robust for standard AMQP URIs (e.g. `amqp://user:pass@host:5672/vhost`). If your broker URL is exotic, add `CELERY_BROKER_URL` or `BROKER_URL` to settings.
+
+
 ## 🛠️ Development
 
 ### Code Quality

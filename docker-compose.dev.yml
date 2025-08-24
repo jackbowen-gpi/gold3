@@ -58,6 +58,8 @@ services:
       - DJANGO_SETTINGS_MODULE=gold3.settings.local_base
       - WEBPACK_STATS_FILE=/repo/webpack-stats.json
       - FRONTEND_DIR=/app/frontend
+      - FRONTEND_DEV_HOST=frontend
+      - FRONTEND_DEV_PORT=3000
     depends_on:
       db:
         condition: service_healthy

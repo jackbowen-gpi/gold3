@@ -13,6 +13,7 @@ from drf_spectacular.views import (
 )
 from rest_framework.routers import DefaultRouter
 from users.routes import routes as users_routes
+from common.dev_health import dev_health, dev_health_ui, readiness
 
 
 router = DefaultRouter()
@@ -44,6 +45,10 @@ urlpatterns = [
         name="redoc",
     ),
     path('sentry-debug/', trigger_error),
+    # Development-only aggregated health endpoint
+    path('dev-health/', dev_health, name='dev-health'),
+    path('dev/health/', dev_health_ui, name='dev-health-ui'),
+    path('healthz/', readiness, name='readiness'),
 ]
 
 # In development, ensure the staticfiles app serves static assets referenced under STATIC_URL

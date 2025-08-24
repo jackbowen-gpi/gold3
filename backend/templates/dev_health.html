@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Dev Health</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; padding: 24px; }
+      .service { display:flex; align-items:center; gap:12px; padding:8px 0; }
+      .badge { width:12px; height:12px; border-radius:50%; display:inline-block; }
+      .ok { background:#16a34a; }
+      .warn { background:#f59e0b; }
+      .bad { background:#ef4444; }
+      pre { background:#f3f4f6; padding:12px; border-radius:6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Dev health</h1>
+    <p>Aggregated status for local development services.</p>
+    <div id="summary" style="margin-bottom:12px; padding:8px; border-radius:6px; background:#eef2ff;">
+      <strong id="summary-text">Loading summary...</strong>
+      <div style="margin-top:8px;">
+        <a href="/admin/" target="_blank">Admin</a> |
+        <a href="/dev/health/" target="_self">Refresh UI</a> |
+        <a href="/dev-health/" target="_blank">Raw JSON</a>
+      </div>
+    </div>
+    <div id="statuses">
+      Loading...
+    </div>
+    <script>
+      async function load() {
+        try {
+          const r = await fetch('/dev-health/');
+          const data = await r.json();
+          const container = document.getElementById('statuses');
+          container.innerHTML = '';
+          for (const [k,v] of Object.entries(data)) {
+            const div = document.createElement('div');
+            div.className = 'service';
+            const badge = document.createElement('span');
+            badge.className = 'badge ' + (v.ok ? 'ok' : (v.status_code && v.status_code>=200 && v.status_code<400 ? 'ok' : 'bad'));
+            const title = document.createElement('strong');
+            title.textContent = k;
+            const details = document.createElement('pre');
+            details.textContent = JSON.stringify(v, null, 2);
+            div.appendChild(badge);
+            div.appendChild(title);
+            div.appendChild(details);
+            container.appendChild(div);
+          }
+          // summary
+          const allOk = Object.values(data).every(s => s.ok === true);
+          const summaryText = allOk ? 'All services OK' : 'Some services require attention';
+          document.getElementById('summary-text').textContent = summaryText;
+        } catch (err) {
+          document.getElementById('statuses').innerText = 'Error fetching /dev-health/: ' + err;
+        }
+      }
+      load();
+      setInterval(load, 5000);
+    </script>
+  </body>
+</html>
