@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 import django_js_reverse.views
 from api.v1.urls import urlpatterns as v1_urls
@@ -43,3 +45,7 @@ urlpatterns = [
     ),
     path('sentry-debug/', trigger_error),
 ]
+
+# In development, ensure the staticfiles app serves static assets referenced under STATIC_URL
+if getattr(settings, "DEBUG", False):
+    urlpatterns += staticfiles_urlpatterns()

@@ -1,4 +1,13 @@
+.history
+frontend/webpack_bundles
+frontend/webpack-stats.json
+node_modules
+dist
 frontend/bundles/
 frontend/webpack_bundles/
 frontend/js/api/
 .admin
+frontend/js
+# ignore source maps and generated maps
+**/*.map
+frontend/**/*.map

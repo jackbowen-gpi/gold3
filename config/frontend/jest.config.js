@@ -5,6 +5,7 @@ module.exports = {
     "^.+\\.(css|scss|png|svg|jpg|jpeg|gif|webp)$": "jest-transform-stub",
   },
   transformIgnorePatterns: ["node_modules/*"],
+  testPathIgnorePatterns: ["\\.history\\"],
   modulePaths: ["frontend", "frontend/js", "frontend/js/app"],
   setupFilesAfterEnv: ["./jest.setup.js"],
   testEnvironment: "jsdom",

@@ -7,7 +7,7 @@ db.sqlite3-journal
 /staticfiles/*
 /mediafiles/*
 __pycache__/
-/.vscode/
+.vscode/
 
 # coverage result
 .coverage
@@ -52,7 +52,7 @@ tmp_email/
 .tool-versions
 
 # misc
-.admin
+.admin/notes
 .history
 
 # Logs
@@ -82,4 +82,5 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+.admin
 

@@ -1,0 +1,2 @@
+// original flat-config (disabled). To re-enable migration to flat config, rename back to eslint.config.js
+module.exports = {};

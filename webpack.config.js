@@ -27,22 +27,92 @@ module.exports = (env, argv) => {
   return {
     mode: isDev ? "development" : "production",
     devtool: "source-map",
-    devServer: {
+  devServer: {
       hot: true,
       historyApiFallback: true,
       host: "0.0.0.0",
       port: 3000,
       // Accept requests from other hosts (helpful for headless smoke tests and Docker)
       allowedHosts: 'all',
-      // Allow CORS requests from the Django dev server domain:
-      headers: { "Access-Control-Allow-Origin": "*" },
+      // Reduce client-side and middleware logging noise to avoid duplicated startup messages
+      client: {
+        logging: 'warn',
+        overlay: false,
+        // Ensure the client connects to the correct websocket URL when the dev-server
+        // is containerized. webpackPublicHost is set above to host.docker.internal in dev
+        // which allows the browser on the host to reach the dev-server inside Docker.
+        webSocketURL: webpackPublicHost.replace(/^http/, 'ws'),
+      },
+      
+      // Allow CORS requests from the Django dev server domain and set a
+      // development-only Content-Security-Policy that permits loading bundles
+      // from the dev-server. This overrides any restrictive defaults present
+      // in the environment and is safe because it only applies to `mode=development`.
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        // Permit scripts/styles from any origin in dev (keeps Puppeteer and
+        // containerized test runners happy). Adjust if you want to be stricter.
+        "Content-Security-Policy": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' blob:; style-src * 'unsafe-inline'"
+      },
+      // Some environments or middleware may inject a restrictive Content-Security-Policy
+      // (for example "default-src 'none'") which blocks loading dev bundles from the
+      // dev-server itself. In development, strip any Content-Security-Policy header so
+      // the backend-provided CSP (or no CSP) governs resource loading.
+      setupMiddlewares: (middlewares, devServer) => {
+        // Insert a first-run middleware that strips Content-Security-Policy.
+        // By adding it to the front of `middlewares` we ensure it runs before
+        // webpack-dev-server's static/content handlers which may add headers.
+        const stripCsp = {
+          name: 'strip-csp',
+          path: '/',
+          middleware: (req, res, next) => {
+            // Wrap writeHead to remove or replace CSP at the last moment.
+            const origWriteHead = res.writeHead;
+            res.writeHead = function writeHead() {
+              try {
+                // Remove any header already set on the response.
+                res.removeHeader && res.removeHeader('Content-Security-Policy');
+                // Also sanitize headers object if provided as arg.
+                for (let i = 0; i < arguments.length; i++) {
+                  const arg = arguments[i];
+                  if (arg && typeof arg === 'object') {
+                    delete arg['content-security-policy'];
+                    delete arg['Content-Security-Policy'];
+                  }
+                }
+                // Explicitly set a permissive development CSP so downstream
+                // middleware or the dev-server runtime doesn't leave a
+                // restrictive default-src 'none' in place.
+                res.setHeader && res.setHeader('Content-Security-Policy', "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' blob:; style-src * 'unsafe-inline'");
+              } catch (err) {
+                // ignore
+              }
+              return origWriteHead.apply(this, arguments);
+            };
+            next();
+          },
+        };
+
+        // Ensure our middleware is first.
+        middlewares.unshift(stripCsp);
+        return middlewares;
+      },
       // Ensure dev middleware serves bundles under the same publicPath used in the bundle tracker
       // and write bundles to disk so the backend and external test runners (Puppeteer in Docker)
       // can fetch the exact filenames referenced in the manifest.
       devMiddleware: {
         publicPath: '/frontend/webpack_bundles/',
+        // In development, write bundles to disk so the backend (and external
+        // test runners) can fetch exact filenames the manifest references.
+        // This avoids problems where the dev-server serves bundles only from
+        // memory and the backend cannot resolve them.
         writeToDisk: true,
+        stats: 'errors-warnings',
       },
+    },
+    // Reduce internal webpack infrastructure logs (keeps errors visible but silences info/debug)
+    infrastructureLogging: {
+      level: 'warn',
     },
     context: __dirname,
     entry: ["./frontend/js/index.tsx"],

@@ -1,4 +1,2 @@
-// Export authentication-related types here using ES module syntax
-
-// Example:
-// export type { User, AuthResponse } from "./authTypes";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });

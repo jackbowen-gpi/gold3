@@ -1,1 +1,1 @@
-config/frontend/jest.config.js
+module.exports = require('./config/frontend/jest.config.js');

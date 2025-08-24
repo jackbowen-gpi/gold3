@@ -93,6 +93,7 @@ exclude = [
     "build",
     "dist",
     "node_modules",
+  ".history",
     "venv",
     "virtualenvs",
 ]
@@ -149,3 +150,4 @@ lines-after-imports = 2
 branch = true
 source = ["backend"]
 omit = ["**/venv/*", "**/env/*", "**/virtualenvs/*", "**/node_modules/*", "**/migrations/*", "**/settings/*", "**/tests/*"]
+# exclude .history backups from coverage

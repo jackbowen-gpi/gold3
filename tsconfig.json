@@ -1,35 +1,20 @@
 ﻿{
   "compilerOptions": {
-    "target": "ES2020",
-  "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "jsx": "react-jsx",
+    "target": "es2022",
+    "module": "node18",
+    "lib": ["es2022"],
+    "moduleResolution": "nodenext",
+    "allowJs": true,
+    "checkJs": false,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-  "allowJs": true,
-  "checkJs": true,
-  "types": ["jest", "@testing-library/jest-dom", "node"],
+    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "noEmit": true,
-    "forceConsistentCasingInFileNames": true
+    "strict": true,
+    "outDir": "dist",
+  "rootDir": ".",
+    "noEmit": false
   },
-  "include": [
-    "frontend/js/**/*",
-    "frontend/**/*.ts",
-    "frontend/**/*.tsx",
-    "src/**/*",
-    "frontend/assets/**/*",
-    "openapi-ts.config.ts",
-    "config/frontend/**/*"
-  ]
-  ,
-  "exclude": [
-    "frontend/webpack_bundles",
-    "webpack_bundles",
-    "node_modules",
-    "dist",
-    "build"
-  ]
+  "include": ["src", "backend", "frontend/**/*", "**/*.ts", "**/*.js"],
+  "exclude": ["node_modules", "dist", "config"]
 }

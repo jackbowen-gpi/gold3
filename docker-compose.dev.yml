@@ -54,7 +54,10 @@ services:
       - DEBUG=True
       - DATABASE_URL=postgresql://gold3:gold3_dev_password@db:5432/gold3_dev
       - REDIS_URL=redis://redis:6379/0
+      - ALLOW_DEV_CSP_HOST=1
       - DJANGO_SETTINGS_MODULE=gold3.settings.local_base
+      - WEBPACK_STATS_FILE=/repo/webpack-stats.json
+      - FRONTEND_DIR=/app/frontend
     depends_on:
       db:
         condition: service_healthy
@@ -62,7 +65,7 @@ services:
         condition: service_healthy
       broker:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:8000
+    command: /bin/sh -c "python /app/scripts/check_webpack_stats.py; python manage.py runserver 0.0.0.0:8000"
 
   frontend:
     build:

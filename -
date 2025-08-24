@@ -1,0 +1,44 @@
+{
+  "status": "done",
+  "assets": {
+    "1561b91d7b75f3ca2814.png": {
+      "name": "1561b91d7b75f3ca2814.png",
+      "path": "C:\\Dev\\gold3\\frontend\\webpack_bundles\\1561b91d7b75f3ca2814.png",
+      "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/1561b91d7b75f3ca2814.png",
+      "sourceFilename": "frontend/assets/images/django-logo-negative.png"
+    },
+    "4c677b78d12c96ea7add.png": {
+      "name": "4c677b78d12c96ea7add.png",
+      "path": "C:\\Dev\\gold3\\frontend\\webpack_bundles\\4c677b78d12c96ea7add.png",
+      "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/4c677b78d12c96ea7add.png",
+      "sourceFilename": "frontend/assets/images/django-logo-positive.png"
+    },
+    "main-951b7a11216e848d6384.js": {
+      "name": "main-951b7a11216e848d6384.js",
+      "path": "C:\\Dev\\gold3\\frontend\\webpack_bundles\\main-951b7a11216e848d6384.js",
+      "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/main-951b7a11216e848d6384.js"
+    },
+    "main-951b7a11216e848d6384.js.map": {
+      "name": "main-951b7a11216e848d6384.js.map",
+      "path": "C:\\Dev\\gold3\\frontend\\webpack_bundles\\main-951b7a11216e848d6384.js.map",
+      "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/main-951b7a11216e848d6384.js.map"
+    },
+    "vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js": {
+      "name": "vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js",
+      "path": "C:\\Dev\\gold3\\frontend\\webpack_bundles\\vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js",
+      "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js"
+    },
+    "vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js.map": {
+      "name": "vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js.map",
+      "path": "C:\\Dev\\gold3\\frontend\\webpack_bundles\\vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js.map",
+      "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js.map"
+    }
+  },
+  "chunks": {
+    "main": [
+      "vendors-node_modules_style-loader_dist_runtime_injectStylesIntoStyleTag_js-node_modules_style-26d909-119ad83501b4397d4386.js",
+      "main-951b7a11216e848d6384.js"
+    ]
+  },
+  "publicPath": "http://host.docker.internal:3000/frontend/webpack_bundles/"
+}
