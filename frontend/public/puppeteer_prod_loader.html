@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PUppeteer Prod Loader</title>
+</head>
+<body>
+  <div id="react-app"></div>
+  <script>
+    // Ensure chunks load from this server
+    window.__webpack_public_path__ = location.origin + '/frontend/webpack_bundles/';
+  </script>
+  <script src="/frontend/webpack_bundles/137-c904a874bc82301bbad3.js"></script>
+  <script src="/frontend/webpack_bundles/main-880d5e3c1cec533d9d0f.js"></script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-import json
 import socket
 import urllib.request
 import urllib.parse
@@ -83,7 +82,6 @@ def _check_celery(timeout=3.0):
     # Best-effort: try to use celery.app.control.inspect if celery is installed and configured
     try:
         from celery import Celery
-        from celery.app.control import Inspect
 
         app = Celery()
         broker = getattr(settings, "CELERY_BROKER_URL", None) or getattr(settings, "BROKER_URL", None)
@@ -102,7 +100,7 @@ def _check_frontend(host: str, port: int, scheme: str = "http"):
     # TCP check
     try:
         with socket.create_connection((host, int(port)), timeout=2.0):
-            tcp_ok = True
+            pass
     except Exception as e:
         return {"ok": False, "error": f"tcp: {e}"}
 

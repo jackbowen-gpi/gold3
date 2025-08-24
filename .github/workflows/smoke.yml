@@ -1,3 +1,37 @@
+name: Frontend smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Build frontend production assets
+        run: |
+          npm run build
+
+      - name: Run smoke test
+        run: |
+          chmod +x scripts/ci_smoke_run.sh
+          ./scripts/ci_smoke_run.sh
+        env:
+          SMOKE_URL: http://localhost:8081/puppeteer_prod_loader.html
+          SMOKE_BACKEND_URL: http://localhost:8000
 name: Smoke tests
 
 on:

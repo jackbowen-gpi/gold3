@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Puppeteer Loader</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script>
+      // inline marker to confirm inline scripts execute
+      window.__LOADER_INLINE__ = 'ran';
+      console.log('LOADER: inline marker set');
+    </script>
+  </head>
+  <body>
+    <div id="react-app"></div>
+    <div id="loader-status">loading</div>
+    <script>
+      (function () {
+        function push(msg) {
+          try { console.log('LOADER:', msg); } catch (e) {}
+          try { (window.__LOADER_EVENTS__ = window.__LOADER_EVENTS__ || []).push(msg); } catch (e) {}
+        }
+        // Ensure webpack uses the loader server's publicPath so async chunks are fetched from here
+        try { window.__webpack_public_path__ = window.__webpack_public_path__ || (location.origin + '/frontend/webpack_bundles/'); } catch (e) {}
+        // Instead of loading the bundle as a script tag (which hardcodes publicPath), fetch
+        // the bundle text and rewrite its publicPath to point at this origin so async chunks
+        // are requested from the loader server. Then evaluate the modified bundle.
+        (async function(){
+          try {
+            const url = '/frontend/webpack_bundles/main.js';
+            const r = await fetch(url);
+            if (!r.ok) throw new Error('bundle fetch failed ' + r.status);
+            let txt = await r.text();
+            // Replace __webpack_require__.p assignments (development build sets this to dev-server)
+            txt = txt.replace(/__webpack_require__\.p\s*=\s*\".*?\"\s*;/g, "__webpack_require__.p = location.origin + '/frontend/webpack_bundles/';");
+            // Also support single-quoted variants
+            txt = txt.replace(/__webpack_require__\.p\s*=\s*'.*?'\s*;/g, "__webpack_require__.p = location.origin + '/frontend/webpack_bundles/';");
+            // Evaluate the modified bundle in global scope
+            try {
+              new Function(txt)();
+              push('bundle evaluated via fetch+rewrite');
+              document.getElementById('loader-status').textContent = 'loaded';
+            } catch (e) {
+              push('bundle eval error: ' + (e && e.message));
+              document.getElementById('loader-status').textContent = 'error';
+            }
+          } catch (e) {
+            push('bundle fetch/eval failed: ' + (e && e.message));
+            document.getElementById('loader-status').textContent = 'error';
+          }
+        })();
+      })();
+    </script>
+  </body>
+</html>

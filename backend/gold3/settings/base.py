@@ -1,9 +1,10 @@
 import os
 
 from decouple import config
-from dj_database_url import parse as db_url
 
-
+# base settings provide many symbols imported via `from .base import *` in
+# other env-specific settings files; silence ruff complaints in those files
+# by marking those imports with noqa in the other files.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Repo root (one level above backend/ directory)

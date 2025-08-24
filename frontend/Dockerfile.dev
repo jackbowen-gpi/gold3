@@ -7,6 +7,20 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
+# Install Chromium and libs required by Puppeteer in Alpine
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto \
+    wget
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROME_BIN=/usr/bin/chromium-browser
+
 # Copy configuration
 COPY config/frontend/ ./config/frontend/
 

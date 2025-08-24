@@ -2,21 +2,21 @@ import sentry_sdk
 from decouple import Csv, config
 from django_guid.integrations import SentryIntegration as DjangoGUIDSentryIntegration
 
-from .base import *
+from .base import *  # noqa: F403,F405
 
 
 DEBUG = False
 
 SECRET_KEY = config("SECRET_KEY")
 
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa: F405
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
 
-STATIC_ROOT = base_dir_join("staticfiles")
+STATIC_ROOT = base_dir_join("staticfiles")  # noqa: F405
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = base_dir_join("mediafiles")
+MEDIA_ROOT = base_dir_join("mediafiles")  # noqa: F405
 MEDIA_URL = "/media/"
 
 SERVER_EMAIL = "jack.bowen@graphicpkg.com"
@@ -41,7 +41,7 @@ SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = "DENY"
 
 # Webpack
-WEBPACK_LOADER["DEFAULT"]["CACHE"] = True
+WEBPACK_LOADER["DEFAULT"]["CACHE"] = True  # noqa: F405
 
 # Celery
 # Recommended settings for reliability: https://gist.github.com/fjsj/da41321ac96cf28a96235cb20e7236f6
@@ -70,7 +70,7 @@ DJANGO_GUID = {
 }
 
 # django-log-request-id
-MIDDLEWARE.insert(  # insert RequestIDMiddleware on the top
+MIDDLEWARE.insert(  # insert RequestIDMiddleware on the top  # noqa: F405
     0, "log_request_id.middleware.RequestIDMiddleware"
 )
 

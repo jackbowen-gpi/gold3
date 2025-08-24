@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # noqa: F403,F405
 
 
 DEBUG = True
@@ -7,10 +7,10 @@ ALLOWED_HOSTS = ["*"]
 SECRET_KEY = ["test-secret-key"]
 
 
-STATIC_ROOT = base_dir_join("staticfiles")
+STATIC_ROOT = base_dir_join("staticfiles")  # noqa: F405
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = base_dir_join("mediafiles")
+MEDIA_ROOT = base_dir_join("mediafiles")  # noqa: F405
 MEDIA_URL = "/media/"
 
 STORAGES = {

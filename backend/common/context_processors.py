@@ -1,4 +1,6 @@
 import os
+from django.conf import settings
+
 
 def frontend_dev_settings(request):
     frontend_host = os.environ.get('FRONTEND_DEV_HOST')
@@ -21,7 +23,6 @@ def frontend_dev_settings(request):
         'FRONTEND_DEV_PORT': frontend_port,
         'WEBPACK_PUBLIC_HOST': webpack_public,
     }
-from django.conf import settings
 
 
 def sentry_dsn(request):

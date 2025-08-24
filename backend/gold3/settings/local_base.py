@@ -2,7 +2,7 @@ from django.core.management.utils import get_random_secret_key
 import os
 from decouple import config
 
-from .base import *
+from .base import *  # noqa: F403,F405
 
 
 DEBUG = True
@@ -11,10 +11,10 @@ HOST = "http://localhost:8000"
 
 SECRET_KEY = get_random_secret_key()
 
-STATIC_ROOT = base_dir_join("staticfiles")
+STATIC_ROOT = base_dir_join("staticfiles")  # noqa: F405
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = base_dir_join("mediafiles")
+MEDIA_ROOT = base_dir_join("mediafiles")  # noqa: F405
 MEDIA_URL = "/media/"
 
 STORAGES = {
@@ -82,12 +82,12 @@ LOCAL_HOST_WS_URL = "ws://host.docker.internal:3000/ws"
 _allow_dev_csp = os.getenv("ALLOW_DEV_CSP_HOST", "").lower() in ("1", "true", "yes")
 if _allow_dev_csp:
     # Add the primary docker -> host dev URL
-    CSP_SCRIPT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
-    CSP_CONNECT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
-    CSP_FONT_SRC += [LOCAL_HOST_URL]
-    CSP_IMG_SRC += [LOCAL_HOST_URL]
+    CSP_SCRIPT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]  # noqa: F405
+    CSP_CONNECT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]  # noqa: F405
+    CSP_FONT_SRC += [LOCAL_HOST_URL]  # noqa: F405
+    CSP_IMG_SRC += [LOCAL_HOST_URL]  # noqa: F405
     # Allow styles from the webpack devserver when running in local/dev compose
-    CSP_STYLE_SRC += [LOCAL_HOST_URL]
+    CSP_STYLE_SRC += [LOCAL_HOST_URL]  # noqa: F405
     # Also allow common alternative dev hostnames used by developers and CI
     ALT_DEV_HOSTS = [
         "http://localhost:3000",
@@ -110,10 +110,10 @@ if _allow_dev_csp:
 # If no DATABASE_URL is provided in local development, use a lightweight
 # sqlite database so the dev server can boot without requiring Postgres.
 if not config("DATABASE_URL", default=""):
-    DATABASES = {
+        DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": base_dir_join("db.sqlite3"),
+            "NAME": base_dir_join("db.sqlite3"),  # noqa: F405
         }
     }
 SESSION_COOKIE_SECURE = False
@@ -130,6 +130,6 @@ if DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": base_dir_join("db.sqlite3"),
+            "NAME": base_dir_join("db.sqlite3"),  # noqa: F405
         }
     }

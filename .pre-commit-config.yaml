@@ -1,1 +1,16 @@
+repos:
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: '' # use pinned rev in PR
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+
+  - repo: local
+    hooks:
+      - id: eslint-npm
+        name: eslint (npm)
+        entry: bash -c "npm run -s lint"
+        language: system
+        files: '\\.(js|jsx|ts|tsx)$'
+        stages: [commit]
 config/ci/.pre-commit-config.yaml
