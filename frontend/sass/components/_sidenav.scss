@@ -1,0 +1,60 @@
+/* SideNav component styles */
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  left: 0;
+  border-right: 1px solid rgba(0,0,0,0.06);
+  transition: width 200ms ease, background 200ms ease, color 200ms ease;
+}
+
+.sidenav--collapsed {
+  width: 60px;
+}
+.sidenav--expanded {
+  width: 220px;
+}
+
+.sidenav__top {
+  padding: 16px 8px;
+}
+
+.sidenav__brand {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidenav__toggle {
+  margin-left: 8px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sidenav__nav { padding: 0 8px; }
+.sidenav__item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  color: inherit;
+}
+.sidenav__item:focus { outline: none; }
+.sidenav__item svg { flex: 0 0 28px; }
+.sidenav__item__label { margin-left: 8px; }
+
+.sidenav__bottom { padding: 12px; border-top: 1px solid rgba(0,0,0,0.04); }
+.sidenav__theme { background: transparent; border: none; cursor: pointer; color: inherit; }
+
+/* Responsive: collapse nav to hidden on small screens */
+@media (max-width: 767px) {
+  .sidenav { display: none; }
+}

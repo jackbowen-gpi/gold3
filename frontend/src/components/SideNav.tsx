@@ -63,39 +63,7 @@ export const SideNav: React.FC = () => {
     } catch (e) {}
   }, [theme]);
 
-  const navStyle: React.CSSProperties = {
-    width: collapsed ? 60 : 220,
-    transition: 'width 200ms ease',
-    height: '100vh',
-    position: 'sticky',
-    top: 0,
-    left: 0,
-    background: theme === 'dark' ? '#0f172a' : '#ffffff',
-    color: theme === 'dark' ? '#e6eef8' : '#0f172a',
-    borderRight: '1px solid rgba(0,0,0,0.06)',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  };
-
-  const navTopStyle: React.CSSProperties = {
-    padding: '16px 8px',
-  };
-
-  const navItemStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 12px',
-    cursor: 'pointer',
-    borderRadius: 6,
-    marginBottom: 6,
-    color: 'inherit',
-  };
-
-  const bottomStyle: React.CSSProperties = {
-    padding: 12,
-    borderTop: '1px solid rgba(0,0,0,0.04)',
-  };
+  const navClass = `sidenav ${collapsed ? 'sidenav--collapsed' : 'sidenav--expanded'}`;
 
   const doNavigate = (href: string) => {
     if (typeof window !== 'undefined') window.location.assign(href);
@@ -109,21 +77,22 @@ export const SideNav: React.FC = () => {
   };
 
   return (
-    <aside style={navStyle} aria-label="Primary navigation">
-      <div style={navTopStyle}>
+    <aside className={navClass} style={{ background: theme === 'dark' ? '#0f172a' : '#ffffff', color: theme === 'dark' ? '#e6eef8' : '#0f172a' }} aria-label="Primary navigation">
+      <div className="sidenav__top">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', padding: '0 8px', marginBottom: 12 }}>
-          <div style={{ fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{collapsed ? 'G' : 'Gold3'}</div>
+          <div className="sidenav__brand">{collapsed ? 'G' : 'Gold3'}</div>
           <button
+            className="sidenav__toggle"
             onClick={() => setCollapsed(s => !s)}
             aria-label="Toggle navigation"
             aria-pressed={collapsed}
             aria-expanded={!collapsed}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCollapsed(s => !s); } }}
-            style={{ marginLeft: 8, background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer' }}>
+          >
             {collapsed ? '»' : '«'}
           </button>
         </div>
-        <nav>
+        <nav className="sidenav__nav">
           {defaultNav.map((item) => (
             <div
               key={item.href}
@@ -131,23 +100,23 @@ export const SideNav: React.FC = () => {
               tabIndex={0}
               onKeyDown={(e) => onKeyNav(e, item.href)}
               onClick={() => doNavigate(item.href)}
-              style={{ ...navItemStyle }}
+              className="sidenav__item"
               aria-label={item.label}
             >
               <div style={{ width: 28, textAlign: 'center' }}>
                 <Icon name={item.icon} />
               </div>
-              {!collapsed && <div style={{ marginLeft: 8 }}>{item.label}</div>}
+              {!collapsed && <div className="sidenav__item__label">{item.label}</div>}
             </div>
           ))}
         </nav>
       </div>
 
-      <div style={bottomStyle}>
+      <div className="sidenav__bottom">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between' }}>
           <button
+            className="sidenav__theme"
             onClick={() => setTheme(t => (t === 'light' ? 'dark' : 'light'))}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'inherit' }}
             aria-label="Toggle theme"
           >
             {theme === 'light' ? '🌞' : '🌙'}
