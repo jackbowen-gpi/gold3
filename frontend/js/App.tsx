@@ -5,6 +5,7 @@ import { OpenAPI } from "./api";
 import axios from 'axios';
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import { AuthHeader } from "../src/features/authentication/components/AuthHeader";
 
 // Ensure the generated OpenAPI client sends cookies/credentials by default in dev.
@@ -42,7 +43,7 @@ const App = () => {
   return (
     <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
       <AuthHeader />
-      {isLogin ? <LoginPage /> : isRegister ? <div>Register page not implemented yet</div> : <Home />}
+  {isLogin ? <LoginPage /> : isRegister ? <RegisterPage /> : <Home />}
     </Sentry.ErrorBoundary>
   );
 };
