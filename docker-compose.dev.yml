@@ -45,7 +45,7 @@ services:
     volumes:
       - ./backend:/app
       - ./frontend:/app/frontend
-      - ./webpack-stats.json:/webpack-stats.json
+      - ./webpack-stats.json:/repo/webpack-stats.json
       - ./config:/app/config
       - ./docs:/app/docs
     ports:
