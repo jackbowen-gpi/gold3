@@ -3,11 +3,9 @@ from django.core.management.utils import get_random_secret_key
 from .base import *
 
 
-# For local development we want DEBUG on and to avoid forcing HTTPS redirects
 DEBUG = True
 
-# Host used for some local dev CSP entries
-HOST = "http://localhost:8080"
+HOST = "http://localhost:8000"
 
 SECRET_KEY = get_random_secret_key()
 
@@ -72,13 +70,14 @@ LOGGING = {
 JS_REVERSE_JS_MINIFY = False
 
 # Django-CSP
-LOCAL_HOST_URL = "http://localhost:3000"
-LOCAL_HOST_WS_URL = "ws://localhost:3000/ws"
+LOCAL_HOST_URL = "http://host.docker.internal:3000"
+LOCAL_HOST_WS_URL = "ws://host.docker.internal:3000/ws"
 CSP_SCRIPT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
 CSP_CONNECT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
 CSP_FONT_SRC += [LOCAL_HOST_URL]
 CSP_IMG_SRC += [LOCAL_HOST_URL]
-# In development don't require HTTPS or secure cookies
+# Allow styles from the webpack devserver when running in local/dev compose
+CSP_STYLE_SRC += [LOCAL_HOST_URL]
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SECURE_SSL_REDIRECT = False

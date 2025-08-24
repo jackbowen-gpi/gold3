@@ -1,0 +1,171 @@
+name: Smoke tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        include:
+          - scope: unit
+          - scope: integration
+            shard: 1
+          - scope: integration
+            shard: 2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache Poetry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-pypoetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pypoetry-
+
+      - name: Set up Node.js (for build)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install and build frontend (produces webpack-stats.json)
+        env:
+          WEBPACK_PUBLIC_HOST: http://localhost:3000
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build/start required services (db, redis, broker, backend)
+        run: |
+          docker compose -f docker-compose.dev.yml up -d --build db redis broker backend
+
+      - name: Wait for backend to be ready
+        run: |
+          for i in {1..60}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/ || true)
+            if [ "$status" = "200" ]; then
+              echo "backend ready"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Run selected Django tests
+        run: |
+          if [ "${{ matrix.scope }}" = "unit" ]; then
+            echo "Running unit tests"
+            docker compose -f docker-compose.dev.yml exec -T backend sh -c "cd /app && python manage.py test backend.tests.unit --verbosity=2"
+          else
+            echo "Running integration tests (shard: ${SHARD:-1})"
+            # For integration shards we compute a list of test modules and run the subset for this shard.
+            docker compose -f docker-compose.dev.yml exec -T backend sh -c "cd /app && \
+              export SHARD=${{ matrix.shard }}; export TOTAL=2; \
+              python - <<'PY'
+import os,glob,subprocess,sys
+shard=int(os.environ.get('SHARD','1'))
+total=int(os.environ.get('TOTAL','2'))
+files=sorted(glob.glob('tests/integration/**/test_*.py', recursive=True))
+modules=[]
+for i,f in enumerate(files):
+    rel=f[:-3].replace('/','.')
+    if i % total == (shard-1):
+        modules.append(rel)
+if not modules:
+    print('No integration test modules for this shard')
+    sys.exit(0)
+print('Running modules:', modules)
+subprocess.check_call(['python','manage.py','test']+modules+['--verbosity=2'])
+PY"
+          fi
+
+      - name: Tear down services (tests)
+        if: always()
+        run: docker compose -f docker-compose.dev.yml down --volumes --remove-orphans
+
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Cache pip (for faster docker builds that use host caches)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache Poetry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-pypoetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pypoetry-
+
+      - name: Build and start dev stack (backend + frontend)
+  run: docker compose -f docker-compose.dev.yml up -d --build backend frontend
+
+      - name: Install and build frontend (produces webpack-stats.json)
+        env:
+          WEBPACK_PUBLIC_HOST: http://localhost:3000
+        run: |
+          npm ci
+          npm run build
+
+      - name: Wait for backend to be ready
+        run: |
+          for i in {1..60}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/ || true)
+            if [ "$status" = "200" ]; then
+              echo "backend ready"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Wait for frontend to be ready
+        run: |
+          for i in {1..60}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || true)
+            if [ "$status" = "200" ] || [ "$status" = "302" ]; then
+              echo "frontend ready"
+              break
+            fi
+            sleep 2
+          done
+
+
+      - name: Run smoke script
+        env:
+          SMOKE_URL: http://localhost:8000
+          WEBPACK_PUBLIC_HOST: http://localhost:3000
+        run: npm run smoke
+
+      - name: Tear down dev services (smoke)
+        if: always()
+        run: docker compose -f docker-compose.dev.yml down --volumes --remove-orphans

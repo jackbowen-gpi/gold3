@@ -106,9 +106,35 @@ See [Architecture Documentation](docs/architecture/README.md) for detailed infor
    ```
 
 Access the application at:
-- Frontend: http://localhost:3000
+- Frontend (dev server): http://localhost:3000  (for containerized test runners use http://host.docker.internal:3000)
 - Backend API: http://localhost:8000/api/v1/
 - Admin panel: http://localhost:8000/admin/
+
+Try the smoke test (PowerShell)
+
+1. Create your local env file (if you don't already have one):
+
+    copy .env.example .env
+
+2. Start frontend (in background via docker-compose) and backend locally:
+
+    docker compose -f docker-compose.dev.yml up -d --build frontend backend
+
+3. Run the containerized Puppeteer smoke (Windows PowerShell):
+
+    npm run smoke:docker
+
+4. Stop the dev services when done:
+
+    docker compose -f docker-compose.dev.yml down
+
+Note about Content Security Policy (development)
+
+The backend enables a strict Content Security Policy in production. For local development we allow the webpack devserver origin (http://host.docker.internal:3000) to serve styles and fonts so containerized browsers (Puppeteer) can load assets during smoke/E2E runs. This exception is applied in `backend/gold3/settings/local_base.py` and is safe for dev only.
+
+CI note
+
+The GitHub Actions smoke job builds the frontend before starting the dev stack so the generated `webpack-stats.json` references concrete publicPath URLs and hashed filenames the backend can consume. If you change `WEBPACK_PUBLIC_HOST` for CI, update the workflow accordingly.
 
 ## 🛠️ Development
 

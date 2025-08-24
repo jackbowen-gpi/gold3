@@ -1,33 +1,21 @@
 ﻿{
-  "extends": "./config/frontend/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./frontend/js",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "module": "esnext",
-    "target": "es6",
-    "jsx": "react-jsx",
-    "allowJs": true,
+    "target": "ES2020",
+    "module": "ESNext",
     "moduleResolution": "node",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+  "types": ["jest", "@testing-library/jest-dom"],
+    "resolveJsonModule": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@gold3/*": ["./frontend/src/*"]
-    }
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "frontend/src",
-    "frontend/js",
-    "frontend/types",
-    "frontend/index.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.spec.tsx",
-    "**/*.test.tsx"
+    "frontend/js/**/*",
+    "frontend/assets/**/*",
+    "openapi-ts.config.ts",
+    "config/frontend/**/*"
   ]
 }
