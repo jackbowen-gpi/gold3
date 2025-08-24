@@ -1,4 +1,8 @@
 ﻿{
+  // Notes: We previously had a permissive "paths" mapping which remapped all imports
+  // into the `frontend` folder. That caused noisy resolution and IDE confusion.
+  // Specific frontend path mappings are now kept in `config/frontend/tsconfig.json`
+  // and the root config intentionally does not remap module names.
   "compilerOptions": {
     "target": "es2022",
     "module": "node18",

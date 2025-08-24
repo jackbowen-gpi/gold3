@@ -220,6 +220,35 @@ security-check: ## Run security audits
 # Default target
 .DEFAULT_GOAL := help
 
+# =============================================================================
+# Smoke & Developer Helpers
+# =============================================================================
+
+.PHONY: mock-backend
+mock-backend: ## Start mock backend server for smoke tests
+	@echo "🔁 Starting mock backend on http://localhost:4000"
+	@node scripts/mock_backend.js
+
+.PHONY: loader-server
+loader-server: ## Start static loader server for Puppeteer smoke tests
+	@echo "📦 Starting loader server on http://localhost:8080"
+	@node scripts/loader_server.js
+
+.PHONY: smoke-local
+smoke-local: ## Run local puppeteer smoke test (requires frontend/backend running)
+	@echo "🚥 Running local puppeteer smoke test"
+	@npm run smoke
+
+.PHONY: smoke-ci
+smoke-ci: ## Run CI-style smoke using dockerized chromium
+	@echo "🚥 Running CI-style smoke"
+	@npm run smoke:ci
+
+.PHONY: check-all
+check-all: ## Run dependency, typescript, lint checks and tests
+	@echo "🔎 Running full project checks"
+	@npm run check:all
+
 docker_up:
 	docker compose up -d --remove-orphans
 

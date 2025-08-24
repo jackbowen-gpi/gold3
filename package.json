@@ -22,6 +22,26 @@
     "coverage": "jest --coverage",
     "openapi-ts": "openapi-ts"
   },
+
+  "checkScripts": {
+    "check:ts:root": "npx tsc -p ./tsconfig.json --noEmit",
+    "check:ts:frontend": "npx tsc -p ./config/frontend/tsconfig.json --noEmit",
+    "check:deps": "npm ci --prefer-offline --no-audit",
+    "check:lint": "npm run lint && ./.venv/Scripts/ruff.exe check --quiet backend || ruff check --quiet backend",
+    "check:all": "npm run check:deps && npm run check:ts:root && npm run check:ts:frontend && npm run check:lint && npm test -- --silent"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "frontend/src/**/*.{ts,tsx,js,jsx}": [
+      "npm run lint -- --fix",
+      "git add"
+    ]
+  },
+  "prepare": "husky install",
   "dependencies": {
     "@hey-api/openapi-ts": "^0.45.0",
     "@sentry/browser": "^8.55.0",
