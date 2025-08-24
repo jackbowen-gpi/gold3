@@ -14,7 +14,7 @@ services:
     name: gold3
     plan: free
     runtime: python
-    buildCommand: "./render_build.sh"
+  buildCommand: "config/deployment/render_build.sh"
     startCommand: "poetry run gunicorn gold3.wsgi:application --chdir backend --limit-request-line 8188 --log-file -"
     envVars:
       - key: ENABLE_DJANGO_COLLECTSTATIC
