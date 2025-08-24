@@ -27,6 +27,9 @@ if not os.path.exists(WEBPACK_STATS_FILE):
 # Default timezone used across Django and Celery when not overridden by env-specific settings
 TIME_ZONE = os.environ.get("TIME_ZONE", "UTC")
 
+# Redis URL (development default). Override by setting the REDIS_URL environment variable.
+REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+
 # ALLOWED_HOSTS default: allow all hosts in dev if not specified by environment
 # Use decouple.config with a simple CSV cast if available; fallback to '*' -> list
 try:
