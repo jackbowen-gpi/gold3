@@ -1,1 +1,5 @@
-config/frontend/openapi-ts.config.ts
+export default {
+  input: './openapi.yaml',
+  output: './generated',
+  httpClient: 'fetch',
+};

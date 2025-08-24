@@ -130,7 +130,29 @@ Try the smoke test (PowerShell)
 
 Note about Content Security Policy (development)
 
-The backend enables a strict Content Security Policy in production. For local development we allow the webpack devserver origin (http://host.docker.internal:3000) to serve styles and fonts so containerized browsers (Puppeteer) can load assets during smoke/E2E runs. This exception is applied in `backend/gold3/settings/local_base.py` and is safe for dev only.
+The backend enables a strict Content Security Policy in production. For local development we allow the webpack devserver origin (http://host.docker.internal:3000) to serve styles and fonts so containerized browsers (Puppeteer) can load assets during smoke/E2E runs.
+
+Dev opt-in for CSP exception
+
+To avoid accidentally shipping a permissive CSP, the dev CSP allowance is now opt-in. The code in `backend/gold3/settings/local_base.py` reads the environment variable `ALLOW_DEV_CSP_HOST` and only adds the webpack devserver host to the CSP lists when that variable is set to a truthy value (`1`, `true`, or `yes`).
+
+Set the variable locally when you need the devserver to serve assets to containerized browsers. Examples:
+
+PowerShell (Windows):
+
+```powershell
+$Env:ALLOW_DEV_CSP_HOST = '1'
+docker compose -f docker-compose.dev.yml up -d --build frontend backend
+```
+
+Bash / macOS / WSL:
+
+```bash
+export ALLOW_DEV_CSP_HOST=1
+docker compose -f docker-compose.dev.yml up -d --build frontend backend
+```
+
+Alternatively, add the line `ALLOW_DEV_CSP_HOST=1` to your local, untracked `.env` file. Do not commit this to the repo. The default CI and production environments do not set this flag and therefore retain a strict CSP.
 
 CI note
 

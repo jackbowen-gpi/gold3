@@ -1,4 +1,5 @@
 from django.core.management.utils import get_random_secret_key
+import os
 
 from .base import *
 
@@ -70,14 +71,21 @@ LOGGING = {
 JS_REVERSE_JS_MINIFY = False
 
 # Django-CSP
+# Dev host used by the webpack devserver (containers -> host.docker.internal)
 LOCAL_HOST_URL = "http://host.docker.internal:3000"
 LOCAL_HOST_WS_URL = "ws://host.docker.internal:3000/ws"
-CSP_SCRIPT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
-CSP_CONNECT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
-CSP_FONT_SRC += [LOCAL_HOST_URL]
-CSP_IMG_SRC += [LOCAL_HOST_URL]
-# Allow styles from the webpack devserver when running in local/dev compose
-CSP_STYLE_SRC += [LOCAL_HOST_URL]
+
+# Make the dev CSP allowance explicit and opt-in via env var to avoid leaking
+# a permissive CSP into unintended environments. Set ALLOW_DEV_CSP_HOST=1
+# (or true/yes) in your local .env when you need the devserver to serve styles/js.
+_allow_dev_csp = os.getenv("ALLOW_DEV_CSP_HOST", "").lower() in ("1", "true", "yes")
+if _allow_dev_csp:
+    CSP_SCRIPT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
+    CSP_CONNECT_SRC += [LOCAL_HOST_URL, LOCAL_HOST_WS_URL]
+    CSP_FONT_SRC += [LOCAL_HOST_URL]
+    CSP_IMG_SRC += [LOCAL_HOST_URL]
+    # Allow styles from the webpack devserver when running in local/dev compose
+    CSP_STYLE_SRC += [LOCAL_HOST_URL]
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SECURE_SSL_REDIRECT = False
