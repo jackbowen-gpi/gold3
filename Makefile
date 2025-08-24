@@ -26,6 +26,8 @@ setup: install ## Setup development environment
 .PHONY: dev
 dev: ## Start development servers (frontend and backend)
 	@echo "Starting development servers..."
+	@# Ensure a dev user exists before starting services
+	@make seed-dev-user
 	@make -j2 dev-backend dev-frontend
 
 .PHONY: dev-backend
