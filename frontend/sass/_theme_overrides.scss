@@ -2,8 +2,13 @@
 html[data-theme="dark"] {
   --body-bg: #0b1220;
   --body-fg: #e6eef8;
-  --header-bg: #0b1220;
+  --muted-fg: #9aa6b8;
+  --card-bg: #071022;
+  --card-border: rgba(255,255,255,0.06);
   --link-fg: #9fc5ff;
+  --button-bg: #1f6feb;
+  --button-fg: #ffffff;
+  --border-color: rgba(255,255,255,0.06);
   background-color: var(--body-bg);
   color: var(--body-fg);
 }
@@ -11,17 +16,31 @@ html[data-theme="dark"] {
 html[data-theme="light"] {
   --body-bg: #ffffff;
   --body-fg: #111827;
+  --muted-fg: #6b7280;
+  --card-bg: #ffffff;
+  --card-border: rgba(0,0,0,0.06);
+  --link-fg: #1d4ed8;
+  --button-bg: #1f6feb;
+  --button-fg: #ffffff;
+  --border-color: rgba(0,0,0,0.06);
   background-color: var(--body-bg);
   color: var(--body-fg);
 }
 
 /* Small adjustments so panels and navs invert in dark mode */
 html[data-theme="dark"] .card,
+html[data-theme="dark"] .card,
 html[data-theme="dark"] aside {
-  background: #071022;
+  background: var(--card-bg);
   color: var(--body-fg);
-  border-color: rgba(255,255,255,0.04);
+  border-color: var(--card-border);
 }
+
+/* Apply variables to common elements */
+body { background: var(--body-bg); color: var(--body-fg); }
+a { color: var(--link-fg); }
+.card { background: var(--card-bg); border-color: var(--card-border); }
+.btn { background: var(--button-bg); color: var(--button-fg); }
 
 /* Focus styles for keyboard users */
 aside [role="button"]:focus {

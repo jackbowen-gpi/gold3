@@ -18,6 +18,18 @@
   width: 220px;
 }
 
+/* Overlay mode for mobile: when body has .sidenav-open or data attribute is set */
+.sidenav.sidenav--overlay-open,
+body.sidenav-open .sidenav {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: var(--body-bg, #fff);
+}
+
 .sidenav__top {
   padding: 16px 8px;
 }
@@ -54,7 +66,23 @@
 .sidenav__bottom { padding: 12px; border-top: 1px solid rgba(0,0,0,0.04); }
 .sidenav__theme { background: transparent; border: none; cursor: pointer; color: inherit; }
 
+.sidenav__signout { margin-left: 8px; padding: 6px 10px; border-radius: 6px; background: #ef4444; color: white; border: none; cursor: pointer; }
+
+.sidenav__theme { display: inline-flex; align-items: center; gap: 6px; }
+
+
+/* overlay backdrop when open */
+body.sidenav-open::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 900;
+}
+
 /* Responsive: collapse nav to hidden on small screens */
 @media (max-width: 767px) {
+  /* default hidden on small screens, shown when body.sidenav-open is present */
   .sidenav { display: none; }
+  body.sidenav-open .sidenav { display: block; }
 }
