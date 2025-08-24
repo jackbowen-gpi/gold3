@@ -22,3 +22,13 @@ html[data-theme="dark"] aside {
   color: var(--body-fg);
   border-color: rgba(255,255,255,0.04);
 }
+
+/* Focus styles for keyboard users */
+aside [role="button"]:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.9);
+  outline-offset: 2px;
+}
+
+aside [role="button"]:hover {
+  background: rgba(99,102,241,0.06);
+}
