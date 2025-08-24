@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { AuthHeader } from "../src/features/authentication/components/AuthHeader";
+import SideNav from "../src/components/SideNav";
 
 // Ensure the generated OpenAPI client sends cookies/credentials by default in dev.
 // The client uses OpenAPI.WITH_CREDENTIALS to set axios/fetch withCredentials.
@@ -42,8 +43,13 @@ const App = () => {
 
   return (
     <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-      <AuthHeader />
-  {isLogin ? <LoginPage /> : isRegister ? <RegisterPage /> : <Home />}
+      <div style={{ display: 'flex' }}>
+        <SideNav />
+        <div style={{ flex: 1 }}>
+          <AuthHeader />
+          {isLogin ? <LoginPage /> : isRegister ? <RegisterPage /> : <Home />}
+        </div>
+      </div>
     </Sentry.ErrorBoundary>
   );
 };

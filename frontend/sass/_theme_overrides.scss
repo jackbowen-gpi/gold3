@@ -1,0 +1,24 @@
+// Minimal theme override to support SideNav's data-theme toggle
+html[data-theme="dark"] {
+  --body-bg: #0b1220;
+  --body-fg: #e6eef8;
+  --header-bg: #0b1220;
+  --link-fg: #9fc5ff;
+  background-color: var(--body-bg);
+  color: var(--body-fg);
+}
+
+html[data-theme="light"] {
+  --body-bg: #ffffff;
+  --body-fg: #111827;
+  background-color: var(--body-bg);
+  color: var(--body-fg);
+}
+
+/* Small adjustments so panels and navs invert in dark mode */
+html[data-theme="dark"] .card,
+html[data-theme="dark"] aside {
+  background: #071022;
+  color: var(--body-fg);
+  border-color: rgba(255,255,255,0.04);
+}
