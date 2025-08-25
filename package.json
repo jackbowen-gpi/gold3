@@ -45,7 +45,7 @@
   "prepare": "husky install",
   "dependencies": {
     "@hey-api/openapi-ts": "^0.45.0",
-    "@sentry/browser": "^8.55.0",
+    "@sentry/browser": "^10.5.0",
     "@sentry/react": "^8.55.0",
     "axios": "^1.11.0",
     "bootstrap": "~5.3.3",
