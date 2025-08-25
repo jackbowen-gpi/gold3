@@ -4,6 +4,7 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..', 'frontend', 'public');
 const port = process.env.PORT || 8081;
+const devServerHost = process.env.WEBPACK_DEV_SERVER_HOST || 'http://localhost:3000';
 
 function sendFile(res, filePath) {
   const ext = path.extname(filePath).toLowerCase();
@@ -29,6 +30,43 @@ function sendFile(res, filePath) {
   });
 }
 
+function proxyToDevServer(req, res, urlPath) {
+  try {
+    const target = new URL(urlPath, devServerHost);
+    const lib = target.protocol === 'https:' ? require('https') : require('http');
+    const options = {
+      method: 'GET',
+      headers: {
+        // Mirror permissive dev headers so browser/test runners don't block
+        'Access-Control-Allow-Origin': '*',
+      },
+      timeout: 3000,
+    };
+
+    const proxyReq = lib.request(target, options, (proxyRes) => {
+      // Forward status and headers, but avoid leaking hop-by-hop headers
+      const headers = Object.assign({}, proxyRes.headers);
+      delete headers['transfer-encoding'];
+      res.writeHead(proxyRes.statusCode || 200, headers);
+      proxyRes.pipe(res);
+    });
+
+    proxyReq.on('error', () => {
+      res.writeHead(404);
+      res.end('Not found');
+    });
+    proxyReq.on('timeout', () => {
+      proxyReq.destroy();
+      res.writeHead(504);
+      res.end('Gateway timeout');
+    });
+    proxyReq.end();
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 const server = http.createServer((req, res) => {
   try {
     const urlPath = decodeURIComponent(req.url.split('?')[0]);
@@ -50,7 +88,11 @@ const server = http.createServer((req, res) => {
         sendFile(res, filePath);
       } else {
         // If the request looks like an asset (contains frontend/webpack_bundles), return 404
-        if (urlPath.includes('/frontend/webpack_bundles/') || urlPath.includes('.') ) {
+        if (urlPath.includes('/frontend/webpack_bundles/') || urlPath.includes('.')) {
+          // Try proxying asset requests to the webpack dev-server when
+          // the file isn't present locally. This helps CI and local
+          // test runs where the dev-server may be the source of truth.
+          if (proxyToDevServer(req, res, urlPath)) return;
           res.writeHead(404);
           res.end('Not found');
           return;

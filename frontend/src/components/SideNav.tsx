@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../features/authentication/hooks/useAuth';
-import { FiHome, FiLock, FiUser, FiLogOut } from 'react-icons/fi';
+import { FiHome, FiLock, FiUser, FiLogOut, FiTool, FiActivity } from 'react-icons/fi';
 
 const defaultNav = [
   { label: 'Home', href: '/', icon: 'home' },
   { label: 'Login', href: '/login', icon: 'lock' },
   { label: 'Register', href: '/register', icon: 'user' },
+];
+
+// Dev navigation: only surface System Health here. The Dev section is collapsible.
+const devNav = [
+  { label: 'System Health', href: '/health', icon: 'activity' },
 ];
 
 const Icon = ({ name, size = 18 }: { name: string; size?: number }) => {
@@ -26,6 +31,7 @@ export const SideNav: React.FC = () => {
   });
   const [theme, setTheme] = useState<string>(() => (typeof window !== 'undefined' && localStorage.getItem('gold3_theme')) || 'light');
   const { user, isAuthenticated, logout } = useAuth();
+  const [devOpen, setDevOpen] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -77,7 +83,10 @@ export const SideNav: React.FC = () => {
           </button>
         </div>
         <nav className="sidenav__nav">
-          {defaultNav.map((item) => (
+          {/** hide login/register when the user is authenticated */}
+          {defaultNav
+            .filter((item) => !(isAuthenticated && (item.href === '/login' || item.href === '/register')))
+            .map((item) => (
             <div
               key={item.href}
               role="button"
@@ -93,6 +102,41 @@ export const SideNav: React.FC = () => {
               {!collapsed && <div className="sidenav__item__label">{item.label}</div>}
             </div>
           ))}
+
+          {/* Dev section */}
+          <div style={{ height: 10 }} />
+          <div className="sidenav__section">
+            <div
+              className="sidenav__item"
+              role="button"
+              tabIndex={0}
+              aria-expanded={devOpen}
+              onClick={() => setDevOpen(o => !o)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setDevOpen(o => !o); } }}
+              aria-label="Dev"
+            >
+              <div style={{ width: 28, textAlign: 'center' }}>
+                <FiTool size={18} aria-hidden />
+              </div>
+              {!collapsed && <div className="sidenav__item__label">Dev</div>}
+            </div>
+            {devOpen && devNav.map((item) => (
+              <div
+                key={item.href}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => onKeyNav(e, item.href)}
+                onClick={() => doNavigate(item.href)}
+                className="sidenav__item"
+                aria-label={item.label}
+              >
+                <div style={{ width: 28, textAlign: 'center' }}>
+                  <Icon name={item.icon} />
+                </div>
+                {!collapsed && <div className="sidenav__item__label">{item.label}</div>}
+              </div>
+            ))}
+          </div>
         </nav>
       </div>
 

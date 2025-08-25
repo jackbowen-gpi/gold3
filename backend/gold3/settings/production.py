@@ -4,6 +4,12 @@ from django_guid.integrations import SentryIntegration as DjangoGUIDSentryIntegr
 
 from .base import *  # noqa: F403,F405
 
+# Ensure DATABASES is defined from base settings
+try:
+    DATABASES
+except NameError:
+    from .base import DATABASES
+
 
 DEBUG = False
 

@@ -17,6 +17,14 @@ install: ## Install all dependencies
 	poetry install
 	npm install
 
+.PHONY: ci-setup
+ci-setup: ## Install dependencies non-interactively for CI (Poetry + npm)
+	@echo "🧩 CI setup: installing Python and Node deps"
+	python -m pip install --upgrade pip
+	pip install poetry
+	poetry install --no-interaction --no-ansi || true
+	npm ci --silent
+
 .PHONY: setup
 setup: install ## Setup development environment
 	poetry run pre-commit install
@@ -28,12 +36,19 @@ dev: ## Start development servers (frontend and backend)
 	@echo "Starting development servers..."
 	@# Ensure a dev user exists before starting services
 	@make seed-dev-user
+	@# Ensure frontend assets exist so Django can serve them when the dev-server is not used.
+	@make ensure-assets
 	@make -j2 dev-backend dev-frontend
 
 .PHONY: dev-backend
 dev-backend: ## Start Django development server
 	@echo "🔧 Starting Django development server..."
 	poetry run python backend/manage.py runserver
+
+.PHONY: start-gunicorn
+start-gunicorn: ## Start application with gunicorn via Poetry (CI/dev convenience)
+	@echo "🚀 Starting gunicorn via Poetry on 0.0.0.0:8000"
+	poetry run gunicorn gold3.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 30
 
 .PHONY: seed-dev-user
 seed-dev-user: ## Seed a developer user into the local DB
@@ -43,6 +58,16 @@ seed-dev-user: ## Seed a developer user into the local DB
 dev-frontend: ## Start React development server
 	@echo "⚛️  Starting React development server..."
 	npm run dev
+
+.PHONY: ensure-assets
+ensure-assets: ## Ensure frontend assets are built (no-op if already present)
+	@echo "🔧 Ensuring frontend assets present..."
+	@if [ -d frontend/webpack_bundles ] && [ "$(ls frontend/webpack_bundles | wc -l)" -gt 0 ]; then \
+		echo "✅ frontend assets appear to exist, skipping build"; \
+	else \
+		echo "📦 building frontend assets..."; \
+		npm run build; \
+	fi
 
 # Database Management
 .PHONY: migrate

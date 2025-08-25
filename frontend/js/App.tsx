@@ -6,6 +6,8 @@ import axios from 'axios';
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import Health from "./pages/Health";
+import DevHealth from "./pages/DevHealth";
 import { AuthHeader } from "../src/features/authentication/components/AuthHeader";
 import SideNav from "../src/components/SideNav";
 
@@ -40,6 +42,8 @@ const App = () => {
   }
   const isLogin = path.startsWith('/login');
   const isRegister = path.startsWith('/register');
+  const isHealth = path === '/health' || path === '/status';
+  const isDevHealth = path === '/dev-health' || path.startsWith('/dev');
 
   return (
     <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
@@ -47,7 +51,7 @@ const App = () => {
         <SideNav />
         <div style={{ flex: 1 }}>
           <AuthHeader />
-          {isLogin ? <LoginPage /> : isRegister ? <RegisterPage /> : <Home />}
+          {isLogin ? <LoginPage /> : isRegister ? <RegisterPage /> : isHealth ? <Health /> : isDevHealth ? <DevHealth /> : <Home />}
         </div>
       </div>
     </Sentry.ErrorBoundary>

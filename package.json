@@ -15,6 +15,7 @@
     "dev": "webpack serve --mode=development --hot",
     "build": "NODE_ENV=production tsc && webpack --progress --bail --mode=production",
     "smoke": "node scripts/puppeteer_smoke.js",
+  "asset-smoke": "node scripts/asset_smoke.js",
     "smoke:docker": "docker run --rm -e SMOKE_URL=http://host.docker.internal:8000 -v %CD%:/workspace -w /workspace node:20-bullseye sh -c \"apt-get update -qq && apt-get install -y -qq chromium && npm install puppeteer@24.17.0 --no-audit --no-fund >/dev/null 2>&1 && node scripts/puppeteer_smoke.js\"",
     "smoke:ci": "npm run smoke:docker",
     "lint": "eslint \"frontend/src/**/*.{ts,tsx}\" --ignore-pattern 'frontend/webpack_bundles/**' --ignore-pattern 'frontend/**/*.map' --max-warnings=0",

@@ -9,14 +9,23 @@ module.exports = (env, argv) => {
   // Allow overriding the public host used in dev so containerized test runners can reach webpack-dev-server.
   // e.g. WEBPACK_PUBLIC_HOST=http://host.docker.internal:3000
   const webpackPublicHost = process.env.WEBPACK_PUBLIC_HOST || (isDev ? "http://host.docker.internal:3000" : "http://localhost:3000");
+  // When WEBPACK_PUBLIC_HOST is not explicitly provided in development,
+  // prefer a relative publicPath so the backend can serve bundles from
+  // its configured staticfiles locations if the dev-server is not running.
+  const devPublicPathFallback = process.env.WEBPACK_PUBLIC_HOST ? `${webpackPublicHost}/frontend/webpack_bundles/` : '/frontend/webpack_bundles/';
   const nodeModulesDir = path.resolve(__dirname, "node_modules");
   const localhostOutput = {
     path: path.resolve("./frontend/webpack_bundles/"),
-  publicPath: `${webpackPublicHost}/frontend/webpack_bundles/`,
-  // In development, emit un-hashed filenames so the dev-server can be
-  // referenced as a stable URL (e.g. /frontend/webpack_bundles/main.js).
-  // Production continues to use hashed filenames for caching.
-  filename: "[name].js",
+    // Use an explicit absolute public host when provided (useful for
+    // containerized setups). Otherwise use a relative publicPath so
+    // Django's staticfiles can serve the files if the dev-server is
+    // not running. This avoids hard failures when localhost:3000 is
+    // unavailable.
+    publicPath: devPublicPathFallback,
+    // In development, emit un-hashed filenames so the dev-server can be
+    // referenced as a stable URL (e.g. /frontend/webpack_bundles/main.js).
+    // Production continues to use hashed filenames for caching.
+    filename: "[name].js",
   };
   const productionOutput = {
     path: path.resolve("./frontend/webpack_bundles/"),
@@ -55,6 +64,11 @@ module.exports = (env, argv) => {
         // Permit scripts/styles from any origin in dev (keeps Puppeteer and
         // containerized test runners happy). Adjust if you want to be stricter.
         "Content-Security-Policy": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' blob:; style-src * 'unsafe-inline'"
+  ,
+  // Allow cross-origin embedding of resources when the top-level page
+  // sets a Cross-Origin-Opener-Policy (COOP). Without this, Chrome
+  // blocks cross-origin subresources with ERR_BLOCKED_BY_ORB.
+  "Cross-Origin-Resource-Policy": "cross-origin",
       },
       // Some environments or middleware may inject a restrictive Content-Security-Policy
       // (for example "default-src 'none'") which blocks loading dev bundles from the
@@ -207,7 +221,10 @@ module.exports = (env, argv) => {
       new BundleTracker({
         path: __dirname,
         filename: "webpack-stats.json",
-        publicPath: isDev ? `${webpackPublicHost}/frontend/webpack_bundles/` : productionOutput.publicPath,
+        // Mirror the dev publicPath recommendation above: when a specific
+        // WEBPACK_PUBLIC_HOST is provided use it, otherwise prefer the
+        // relative path so the backend/staticfiles can satisfy requests.
+        publicPath: isDev ? devPublicPathFallback : productionOutput.publicPath,
       }),
     ].filter(Boolean),
     resolve: {

@@ -1,0 +1,78 @@
+name: Dev asset smoke check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-asset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Poetry / pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pypoetry
+            ~/.cache/poetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock', '**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Cache node modules and npm cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+
+      - name: CI setup (Makefile target)
+        run: |
+          make ci-setup
+
+      - name: Build frontend
+        run: |
+          npm run build
+
+      - name: Collect webpack-stats (sanity)
+        run: |
+          echo "Checking for webpack-stats.json"
+          ls -la webpack-stats.json || true
+
+      - name: Start web server (Makefile target: start-gunicorn)
+        run: |
+          # Migrate DB if available (best-effort)
+          poetry run python backend/manage.py migrate --noinput || true
+
+          # Use Makefile helper to start gunicorn via Poetry (or fallback)
+          make start-gunicorn &
+          # give process a moment to start
+          sleep 3
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl -sSf http://localhost:8000/dev-asset/ >/dev/null 2>&1; then
+              echo "backend ready"; break
+            fi
+            sleep 1
+          done
+
+      - name: Run asset smoke script
+        run: |
+          npm run asset-smoke -- http://localhost:8000

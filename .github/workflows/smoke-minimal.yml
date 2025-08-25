@@ -1,0 +1,53 @@
+name: Minimal Puppeteer smoke
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system Chromium (for Puppeteer)
+        run: |
+          sudo apt-get update && sudo apt-get install -y chromium
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm deps (skip Puppeteer download; use system Chromium)
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        run: |
+          npm ci
+
+      - name: Build frontend
+        env:
+          WEBPACK_PUBLIC_HOST: http://localhost:3000
+        run: |
+          npm run build
+
+      - name: Start static loader server (serves frontend/public)
+        run: |
+          nohup node scripts/loader_server.js 8081 > loader.log 2>&1 &
+          # wait for loader to be ready
+          for i in {1..30}; do
+            if curl -sSf http://localhost:8081/puppeteer_prod_loader.html >/dev/null 2>&1; then
+              echo loader ready
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run Puppeteer smoke script
+        env:
+          SMOKE_URL: http://localhost:8081/puppeteer_prod_loader.html
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+        run: |
+          node scripts/puppeteer_smoke.js

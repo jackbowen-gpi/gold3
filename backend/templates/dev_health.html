@@ -5,32 +5,187 @@
     <title>Dev Health</title>
     <style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; padding: 24px; }
+  body { background: #f8fafc; }
       .service { display:flex; align-items:center; gap:12px; padding:8px 0; }
-      .badge { width:12px; height:12px; border-radius:50%; display:inline-block; }
+      .badge { width:14px; height:14px; border-radius:50%; display:inline-block; flex:0 0 auto; }
+      .label { font-weight:600; margin-right:8px; }
       .ok { background:#16a34a; }
       .warn { background:#f59e0b; }
       .bad { background:#ef4444; }
-      pre { background:#f3f4f6; padding:12px; border-radius:6px; }
+      pre { background:#f3f4f6; padding:8px; border-radius:6px; font-size:13px; margin:0 0 0 12px; }
+      .service strong { min-width:120px; display:inline-block; }
+  .card-list { display:flex; flex-direction:column; gap:10px; }
+  .banner { border-radius:6px; padding:10px 14px; color:white; font-weight:600; margin:8px 0 12px 0; width:100%; max-width:900px; }
+  .banner.ok { background: linear-gradient(90deg,#16a34a,#059669); }
+  .banner.bad { background: linear-gradient(90deg,#ef4444,#dc2626); }
+  .banner.loading { background: linear-gradient(90deg,#64748b,#475569); opacity:0.95 }
+  .service img { border-radius:4px; }
+  /* asset link states */
+  #asset-link { color:#0366d6; word-break:break-all; }
+  .asset-loading { color:#475569; opacity:0.9 }
+  .asset-ok { color:#059669; font-weight:600 }
+  .asset-missing { color:#b91c1c; font-weight:700 }
+      #summary { display:flex; align-items:center; justify-content:space-between; }
+      #commit { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace; font-size:13px; color:#374151; }
+      #copy-commit { margin-left:8px; font-size:12px; }
     </style>
   </head>
   <body>
     <h1>Dev health</h1>
+  <div id="status-banner" class="banner loading">Loading status...</div>
     <p>Aggregated status for local development services.</p>
+    <div style="margin-bottom:12px;">
+      <button id="back-btn">← Back</button>
+    </div>
     <div id="summary" style="margin-bottom:12px; padding:8px; border-radius:6px; background:#eef2ff;">
-      <strong id="summary-text">Loading summary...</strong>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <strong id="summary-text">Loading summary...</strong>
+        <div id="commit">Commit: <code id="commit-sha">{{ COMMIT_SHA|default:"(not set)" }}</code> <button id="copy-commit">Copy</button></div>
+      </div>
       <div style="margin-top:8px;">
         <a href="/admin/" target="_blank">Admin</a> |
         <a href="/dev/health/" target="_self">Refresh UI</a> |
         <a href="/dev-health/" target="_blank">Raw JSON</a>
       </div>
     </div>
-    <div id="statuses">
+    <div id="statuses" class="card-list">
       Loading...
     </div>
+    <hr style="margin:18px 0;"/>
+    <div id="extra-checks">
+      <h3>Extra checks</h3>
+      <div id="api-check" class="service">Checking API...</div>
+      <div id="frontend-asset-check" class="service">Checking frontend static asset...</div>
+    <div id="static-assets-info" style="margin-top:12px;" data-asset="{{ STATIC_CHECK_ASSET|default:'' }}">
+        <!-- moved static assets diagnostic text -->
+        <strong>Static assets</strong>
+        <p>If you are seeing the green Django logo on a white background and this text color is <code>#092e20</code>, frontend static files serving is working.</p>
+        <p>Below this text, you should see an img tag with the white Django logo on a green background:</p>
+        <div id="static-asset-img" style="margin-top:8px">(loading image...)</div>
+        <div id="asset-url" style="margin-top:8px; font-size:13px; color:#111; display:flex; align-items:center; gap:8px;">
+          Asset URL:
+          <a id="asset-link" href="#" target="_blank" class="asset-loading">(unknown)</a>
+          <button id="copy-asset" style="font-size:12px;">Copy</button>
+        </div>
+      </div>
+      <hr/>
+      <div id="rest-api-info">
+        <h3>REST API</h3>
+        <p>This message comes from the backend. If you're seeing this, the REST API is working!</p>
+      </div>
+    </div>
     <script>
+      document.getElementById('back-btn').addEventListener('click', ()=> history.back());
+
+      async function checkApiMessage() {
+        try {
+          // Use the JSON-producing rest-check endpoint where available
+          const r = await fetch('/api/rest/rest-check/');
+          const el = document.getElementById('api-check');
+          el.innerHTML = '';
+          const badge = document.createElement('span'); badge.className = r.ok ? 'badge ok' : 'badge bad';
+          el.appendChild(badge);
+          // Prefer JSON when the response is JSON, otherwise show a snippet of text/HTML
+          const ctype = r.headers.get('content-type') || '';
+          let bodySummary = '';
+          if (ctype.includes('application/json')) {
+            const j = await r.json();
+            bodySummary = j && j.message ? j.message : JSON.stringify(j);
+          } else {
+            const txt = await r.text();
+            bodySummary = txt ? txt.slice(0, 320).replace(/\s+/g, ' ') : '(no body)';
+          }
+          const txtEl = document.createElement('span'); txtEl.style.marginLeft='8px'; txtEl.textContent = 'API responded: ' + bodySummary;
+          el.appendChild(txtEl);
+        } catch (err) {
+          const el = document.getElementById('api-check');
+          el.innerHTML = '';
+          const badge = document.createElement('span'); badge.className = 'badge bad';
+          el.appendChild(badge);
+          const txt = document.createElement('span'); txt.style.marginLeft='8px'; txt.textContent = 'API fetch failed: ' + err;
+          el.appendChild(txt);
+        }
+      }
+
+      async function checkFrontendAsset() {
+        // Attempt to fetch a small known image emitted by the frontend bundles.
+        // First, ask the server for the canonical asset URL via /dev-asset/.
+        try {
+          const rootEl = document.getElementById('static-assets-info');
+          let assetUrl = '';
+          try {
+            const meta = await fetch('/dev-asset/');
+            if (meta && meta.ok) {
+              const j = await meta.json();
+              if (j && j.asset) assetUrl = j.asset;
+            }
+          } catch (e) {
+            // ignore and fall back to template-injected attribute or hardcoded path
+          }
+
+          const injected = rootEl && rootEl.getAttribute('data-asset');
+          if (!assetUrl) assetUrl = injected && injected.length ? injected : '/frontend/webpack_bundles/1561b91d7b75f3ca2814.png';
+
+          // mark link as loading
+          try { const link = document.getElementById('asset-link'); link.textContent = assetUrl || '(unknown)'; link.className = 'asset-loading'; link.href = assetUrl || '#'; } catch(e){}
+
+          const r = await fetch(assetUrl);
+          const el = document.getElementById('frontend-asset-check');
+          el.innerHTML = '';
+          if (r.ok) {
+            const badge = document.createElement('span'); badge.className = 'badge ok';
+            el.appendChild(badge);
+            const img = document.createElement('img'); img.src = assetUrl; img.style.height='32px'; img.style.marginLeft='8px';
+            el.appendChild(img);
+            const txt = document.createElement('span'); txt.style.marginLeft='8px'; txt.textContent = 'asset fetched ok';
+            el.appendChild(txt);
+            // also show in static-asset-img
+            const wrap = document.getElementById('static-asset-img'); wrap.innerHTML = ''; wrap.appendChild(img.cloneNode(true));
+            // update asset link for debugging
+            try {
+              const link = document.getElementById('asset-link');
+              link.textContent = assetUrl;
+              link.href = assetUrl;
+              const copyBtn = document.getElementById('copy-asset');
+              copyBtn.onclick = () => {
+                navigator.clipboard.writeText(assetUrl).then(()=>{
+                  const old = copyBtn.textContent; copyBtn.textContent = 'Copied'; setTimeout(()=> copyBtn.textContent = old, 1200);
+                }).catch(()=>{});
+              };
+              link.className = 'asset-ok';
+            } catch (e) {}
+          } else {
+            const badge = document.createElement('span'); badge.className = 'badge bad';
+            el.appendChild(badge);
+            const txt = document.createElement('span'); txt.style.marginLeft='8px'; txt.textContent = 'asset fetch failed: ' + r.status;
+            el.appendChild(txt);
+            document.getElementById('static-asset-img').textContent = '(not available)';
+            try { const link = document.getElementById('asset-link'); link.className = 'asset-missing'; } catch(e){}
+          }
+        } catch (err) {
+          const el = document.getElementById('frontend-asset-check');
+          el.innerHTML = '';
+          const badge = document.createElement('span'); badge.className = 'badge bad';
+          el.appendChild(badge);
+          const txt = document.createElement('span'); txt.style.marginLeft='8px'; txt.textContent = 'asset fetch error: ' + err;
+          el.appendChild(txt);
+          document.getElementById('static-asset-img').textContent = '(not available)';
+          try { const link = document.getElementById('asset-link'); link.className = 'asset-missing'; link.textContent = '(error)'; } catch(e){}
+        }
+      }
+
       async function load() {
         try {
           const r = await fetch('/dev-health/');
+          const ctype = r.headers.get('content-type') || '';
+          if (!ctype.includes('application/json')) {
+            // Avoid calling r.json() on HTML (login pages or errors). Show a snippet instead.
+            const txt = await r.text();
+            const snippet = txt ? txt.slice(0, 2000).replace(/\s+/g, ' ') : '(empty response)';
+            document.getElementById('statuses').innerText = 'Non-JSON response from /dev-health/: ' + snippet;
+            document.getElementById('summary-text').textContent = 'Error fetching dev-health';
+            return;
+          }
           const data = await r.json();
           const container = document.getElementById('statuses');
           container.innerHTML = '';
@@ -52,12 +207,32 @@
           const allOk = Object.values(data).every(s => s.ok === true);
           const summaryText = allOk ? 'All services OK' : 'Some services require attention';
           document.getElementById('summary-text').textContent = summaryText;
+          try {
+            const banner = document.getElementById('status-banner');
+            if (banner) {
+              banner.className = 'banner ' + (allOk ? 'ok' : 'bad');
+              banner.textContent = allOk ? 'All systems operational' : 'Some checks failed';
+            }
+          } catch (e) {}
         } catch (err) {
           document.getElementById('statuses').innerText = 'Error fetching /dev-health/: ' + err;
         }
       }
+      // run main status loader and extra checks
       load();
-      setInterval(load, 5000);
+      checkApiMessage();
+      checkFrontendAsset();
+      setInterval(() => { load(); checkApiMessage(); checkFrontendAsset(); }, 5000);
+
+      // copy commit SHA
+      document.getElementById('copy-commit').addEventListener('click', function(){
+        const sha = document.getElementById('commit-sha').textContent || '';
+        if (!sha) return;
+        navigator.clipboard.writeText(sha).then(()=>{
+          const btn = this; const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=> btn.textContent = old, 1500);
+        }).catch(()=>{});
+      });
+  
     </script>
   </body>
 </html>

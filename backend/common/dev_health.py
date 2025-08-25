@@ -157,7 +157,71 @@ def dev_health_ui(request):
 
         return HttpResponseForbidden("Invalid or missing token")
 
-    return render(request, "dev_health.html")
+    # Attempt to read webpack manifest so the UI can check a real asset path
+    asset_url = None
+    try:
+        stats_file = getattr(settings, 'WEBPACK_STATS_FILE', None)
+        if stats_file:
+            import json
+
+            with open(stats_file, 'r', encoding='utf-8') as fh:
+                stats = json.load(fh)
+            # Prefer an explicit asset entry that looks like an image, else fall back
+            assets = stats.get('assets', {}) or {}
+            chosen = None
+            for name, meta in assets.items():
+                if name.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg')):
+                    chosen = meta.get('publicPath') or meta.get('path') or None
+                    break
+            # If not found, try top-level publicPath + first asset name
+            if not chosen and assets:
+                first = next(iter(assets.values()))
+                chosen = first.get('publicPath') or (stats.get('publicPath', '').rstrip('/') + '/' + first.get('name') if first.get('name') else None)
+            asset_url = chosen
+    except Exception:
+        asset_url = None
+
+    return render(request, "dev_health.html", {"STATIC_CHECK_ASSET": asset_url})
+
+
+def dev_asset(request):
+    """Return a small JSON payload with the manifest-selected asset URL.
+
+    This endpoint is intended for CI or programmatic checks that need a
+    deterministic URL to probe. Respects DEBUG and DEV_HEALTH_TOKEN like
+    the other dev endpoints.
+    """
+    if not getattr(settings, "DEBUG", False):
+        return JsonResponse({"error": "dev-only endpoint"}, status=404)
+
+    # Enforce token if configured
+    if not _require_token(request):
+        from django.http import HttpResponseForbidden
+
+        return HttpResponseForbidden("Invalid or missing token")
+
+    asset_url = None
+    try:
+        stats_file = getattr(settings, 'WEBPACK_STATS_FILE', None)
+        if stats_file:
+            import json
+
+            with open(stats_file, 'r', encoding='utf-8') as fh:
+                stats = json.load(fh)
+            assets = stats.get('assets', {}) or {}
+            chosen = None
+            for name, meta in assets.items():
+                if name.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg')):
+                    chosen = meta.get('publicPath') or meta.get('path') or None
+                    break
+            if not chosen and assets:
+                first = next(iter(assets.values()))
+                chosen = first.get('publicPath') or (stats.get('publicPath', '').rstrip('/') + '/' + first.get('name') if first.get('name') else None)
+            asset_url = chosen
+    except Exception:
+        asset_url = None
+
+    return JsonResponse({"asset": asset_url})
 
 
 def readiness(request):

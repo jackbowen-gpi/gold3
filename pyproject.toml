@@ -10,6 +10,10 @@ license = "MIT"
 readme = "README.md"
 package-mode = false
 
+[tool.poetry.scripts]
+# Convenience script to run gunicorn via `poetry run start-gunicorn`
+start-gunicorn = "gunicorn.app.wsgiapp:run"
+
 [tool.poetry.dependencies]
 python = "^3.12"
 Django = "^5.2.5"
